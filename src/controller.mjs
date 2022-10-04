@@ -1,26 +1,12 @@
 import { Pef, Head, Body, Volume, Section, Page, Row } from './pef.mjs';
 import { Outputter } from './outputter.mjs';
+import {recieveFile} from './Parser.mjs';
 
 //import { Parser } from './parser.mjs';
 //import { Translator } from './translator.mjs';
-
-class Parser {
-    // Input: String, Output: Pef
-    static parse(pefFile) {
-        return new Pef(
-            new Head(),
-            new Body([
-                    new Volume([
-                        new Section([
-                            new Page([
-                                new Row("Hello world!")
-                            ])
-                        ])
-                    ])
-                ])
-        );
-    }
-};
+let text = "";
+let fileName = ""
+let fileRead = false;
 class Translator {
     // Input: String (unicode braille), Output: String, cleartext
     static translate(braille) { return braille; }
@@ -28,8 +14,27 @@ class Translator {
 
 
 const fileSelector = document.getElementById('file-selector');
-const runConverter = document.getElementById('run-converter');
-runConverter.addEventListener('click', () => Controller.run());
+fileSelector.addEventListener("input", () => {
+    fileRead = false;
+    fileName = ""
+    if (fileSelector.files.length === 0) {
+        console.warn('No file selected!');
+        return;
+    }
+    let pefFile = fileSelector.files[0];
+    fileName = pefFile.name
+    let sizeKb = pefFile.size / 1000;
+    let reader = new FileReader()
+    reader.addEventListener("loadend", () => {//waits for the file to finish loading
+        text = reader.result
+        fileRead = true;
+    });
+    reader.readAsText(pefFile)//load file
+})
+const runConverter = document.getElementById('converter-button');
+runConverter.addEventListener('click', () => {
+    if(fileRead)Controller.run()
+});
 
 
 function download(filename, text) {
@@ -41,6 +46,7 @@ function download(filename, text) {
     downloadDummyElement.click();
     document.body.removeChild(downloadDummyElement);
 }
+
 
 
 class Controller {
@@ -64,25 +70,19 @@ class Controller {
 
     static run() {
         // 1. Open file?
-        if (fileSelector.files.length === 0) {
-            console.warn('No file selected!');
-            return;
-        }
-
-        let pefFile = fileSelector.files[0];
-        let sizeKb = pefFile.size / 1000;
-        console.log(`Converting file: ${pefFile.name}, size: ${sizeKb} kB, type: ${pefFile.type}`);
-
+        //console.log(`Converting file: ${pefFile.name}, size: ${sizeKb} kB, type: ${pefFile.type}`);
         console.log('Giving file to parser');
-        let pefTree = Parser.parse(pefFile);
+        let pefTree = recieveFile(text)
         console.log('Received pef tree from parser');
-
+        console.log(pefTree)
+        
+        console.log(pefTree.head.meta.title)
         console.log('Translating all rows from braille to clear text');
         for (let volume of pefTree.body.volumes) {
             for (let section of volume.sections) {
                 for (let page of section.pages) {
                     for (let row of page.rows) {
-                        row.text = Translator.translate(row.braille);
+                        Translator.translate(row);
                     }
                 }
             }
@@ -93,8 +93,8 @@ class Controller {
         console.log(`Giving pef tree with clear text to outputter, using format: ${outputFileFormat}`);
         let output = Outputter.format(pefTree, outputFileFormat);
         console.log('Outputter complete');
-
-        let outputFileName = Controller.getOutputFileName(pefFile.name);
+        let outputFileName = Controller.getOutputFileName(fileName);
+        
         console.log(`Finished, downloading file: ${outputFileName}`);
 
         download(outputFileName, output);
