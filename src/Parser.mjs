@@ -15,7 +15,7 @@ let test = 0
  * Reads a file to a String variable
  * Starts parser 
  */
- export function recieveFile(text){
+ export function receiveFile(text){
     return startParser(text)
 }
 
@@ -73,56 +73,10 @@ function extractMetaData(content){
         let typeOfData = rowValue.substring(0, rowValue.indexOf('>'))   //Extract the "type" of data, ex. "title"
         let value = rowValue.substring(rowValue.indexOf('>') + 1, rowValue.length)  //Extracts the value present in the <dc> tag. Ex. "Om våren"
 
-        /*Adds the metadata to the correct attribute in the metaData object */
-        switch(typeOfData){
-            case "format":
-                metaData.format = value
-                break;
-            case "identifier":
-                metaData.identifier = value
-                break;
-            case "title":
-                metaData.title = value
-                break;
-            case "creator":
-                metaData.creator = value
-                break;
-            case "subject":
-                metaData.subject = value
-                break;
-            case "description":
-                metaData.description = value
-                break;
-            case "publisher":
-                metaData.publisher = value
-                break;
-            case "contributor":
-                metaData.contributor = value
-                break;
-            case "date":
-                metaData.date = value
-                break;
-            case "type":
-                metaData.type = value
-                break;
-            case "source":
-                metaData.source = value
-                break;
-            case "language":
-                metaData.language = value
-                break;
-            case "relation":
-                metaData.relation = value
-                break;
-            case "coverage":
-                metaData.relation = value
-                break;
-            case "rights":
-                metaData.rights = value
-                break;
-        }
+        metaData[typeOfData] = value;
         //Updates the substring after each iteration to remove the already added <dc> tag
         headString = headString.substring(endIndex + 1, headString.length);
+        
 
     }
     return metaData

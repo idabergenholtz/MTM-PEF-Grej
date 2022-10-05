@@ -1,6 +1,6 @@
 import { Pef, Head, Body, Volume, Section, Page, Row } from './pef.mjs';
 import { Outputter } from './outputter.mjs';
-import {recieveFile} from './Parser.mjs';
+import {receiveFile} from './Parser.mjs';
 
 //import { Parser } from './parser.mjs';
 //import { Translator } from './translator.mjs';
@@ -72,7 +72,7 @@ class Controller {
         // 1. Open file?
         //console.log(`Converting file: ${pefFile.name}, size: ${sizeKb} kB, type: ${pefFile.type}`);
         console.log('Giving file to parser');
-        let pefTree = recieveFile(text)
+        let pefTree = receiveFile(text)
         console.log('Received pef tree from parser');
         console.log(pefTree)
         
