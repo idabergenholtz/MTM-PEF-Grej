@@ -4,4 +4,4 @@
     npm install --save-dev JEST
 
 3. Du kan nu köra testerna genom
-    npm test
+    node --experimental-vm-modules node_modules/jest/bin/jest.js
