@@ -15,7 +15,7 @@ let test = 0
  * Reads a file to a String variable
  * Starts parser 
  */
- export function recieveFile(text){
+ export function receiveFile(text){
     return startParser(text)
 }
 
