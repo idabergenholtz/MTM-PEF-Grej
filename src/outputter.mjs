@@ -68,7 +68,7 @@ class Outputter {
                     output += outputFormatter.formatPageStart();
                     for (let [row_i, row] of page.rows.entries()) {
                         output += outputFormatter.formatRowStart();
-                        output += row.text;
+                        output += row;//Ändrade från row.text till endast row / Daniel
                         output += outputFormatter.formatRowEnd();
                     }
                     output += outputFormatter.formatPageEnd();
