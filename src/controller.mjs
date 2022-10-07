@@ -1,6 +1,7 @@
 import { Pef, Head, Body, Volume, Section, Page, Row } from './pef.mjs';
 import { Outputter } from './outputter.mjs';
-import {receiveFile} from './Parser.mjs';
+import { receiveFile } from './Parser.mjs';
+import { translateToSwedish } from './translator.mjs';
 
 //import { Parser } from './parser.mjs';
 //import { Translator } from './translator.mjs';
@@ -9,7 +10,7 @@ let fileName = ""
 let fileRead = false;
 class Translator {
     // Input: String (unicode braille), Output: String, cleartext
-    static translate(braille) { return braille; }
+    static translate(braille) { return translateToSwedish(braille); }
 };
 
 
@@ -81,8 +82,11 @@ class Controller {
         for (let volume of pefTree.body.volumes) {
             for (let section of volume.sections) {
                 for (let page of section.pages) {
-                    for (let row of page.rows) {
-                        Translator.translate(row);
+                    /*for (let row of page.rows) {
+                        
+                    }*/
+                    for(let i = 0; i < page.rows.length; i++) {
+                        page.rows[i] = translateToSwedish(page.rows[i])
                     }
                 }
             }
