@@ -7,14 +7,18 @@
     <title>Document</title>
 </head>
 <body>
-    <script src="controller.mjs" type="module"></script>
-
+    
+    <h2>KONVERTERA PEF TILL HTML</h2> <p>Här kan du konvertera din 
+        e-bok i PEF-filformat till HTML som går att läsa direkt på webbsidan. <br>
+        Klicka på knappen nedan för att hämta boken som du vill läsa.<br>
+        Endast filer som slutar med ".pef" är tillåtna.</p>
     <input id="file-selector" type="file" accept=".pef">
-    <button id="converter-button">Konvertera</button>
-
+    <!--<button id="converter-button">Konvertera</button>-->
+    <h3 id="convertPer"></h3>
+    <div id = "text"></div>
     <!-- Need to download stuff -->
     <iframe id="download_frame" style="display:none;"></iframe>
-
+    <script src="controller.mjs" type="module"></script>
 
 </body>
 </html>

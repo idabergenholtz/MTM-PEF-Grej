@@ -23,20 +23,33 @@ fileSelector.addEventListener("input", () => {
         return;
     }
     let pefFile = fileSelector.files[0];
+    //JOHAN: Correct file type check
+    if (pefFile.type != "image/PEF"){
+        window.alert("Filen du försöker ladda är inte PEF-fil.")
+        return;
+    }
+    //JOHAN: Lägger till en check för att fråga om man valt rätt fil
+    let shouldConvert = window.confirm("Vill du konvertera " + pefFile.name + "?")
+    if (!shouldConvert){
+        return;
+    }
     fileName = pefFile.name
     let sizeKb = pefFile.size / 1000;
     let reader = new FileReader()
     reader.addEventListener("loadend", () => {//waits for the file to finish loading
         text = reader.result
         fileRead = true;
+        //JOHAN: Kör run direkt istället för konvertera-knapp
+        Controller.run();
     });
     reader.readAsText(pefFile)//load file
 })
+/*
 const runConverter = document.getElementById('converter-button');
 runConverter.addEventListener('click', () => {
     if(fileRead)Controller.run()
 });
-
+*/
 
 function download(filename, text) {
     let downloadDummyElement = document.createElement('a');
@@ -79,6 +92,8 @@ class Controller {
         
         console.log(pefTree.head.meta.title)
         console.log('Translating all rows from braille to clear text');
+
+        //let count = 0;
         for (let volume of pefTree.body.volumes) {
             for (let section of volume.sections) {
                 for (let page of section.pages) {
@@ -90,7 +105,12 @@ class Controller {
                     }
                 }
             }
+            //document.getElementById('convertPer').textContent = 
+            //                "Konvertering " + (count/pefTree.body.volumes.length)*100 + "% färdig.";
+           // count++;
         }
+        //document.getElementById('convertPer').textContent = 
+        //                    "Konvertering " + 100 + "% färdig.";
         console.log('Done translating braille to clear text');
 
         let outputFileFormat = Controller.getOutputFileFormat();
@@ -101,7 +121,9 @@ class Controller {
         
         console.log(`Finished, downloading file: ${outputFileName}`);
 
-        download(outputFileName, output);
+        //JOHAN: Skippar nedladdning och skriver ut direkt på sidan (för demo och diskussion)
+        document.getElementById('text').innerHTML = output;
+        //download(outputFileName, output);
     }
 }
 
