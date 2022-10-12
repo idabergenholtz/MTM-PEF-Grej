@@ -34,7 +34,7 @@ export function translateToSwedish(braille) {
             continue
         }
 
-        string += "?" //Eller currentChar
+        string += currentChar //Eller currentChar
     }
     return string
 }
