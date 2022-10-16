@@ -153,15 +153,22 @@ Vi kanske vill ha ett sätt att hitta <row/> för styckesuppdelning
     let rowsArray = []
     //let texten = ''
     while(content.indexOf("<row>") != -1){
-        let startIndex = findTag(content, "row>")+5
-        //Måste titta efter första </tag efter startIndex, i butterfly.pef finns det flera </row> innan första <row>
-        let endIndex = startIndex + findEndTag(content.substring(startIndex, content.length), "row", startIndex)    
+       
+            let startIndex = findTag(content, "row")
+        //let endIndex = startIndex + findEndTag(content.substring(startIndex, content.length), "row")    
         //Ovantstående rad beräknar endIndex för första förkomst av </row> efter vårt startIndex, detta behöver kanske göras för alla taggar, men i våra exempel är det bara för row det var ett problem
-
+        let endIndex = startIndex + findEndTagRow(content.substring(startIndex, content.length), "/") 
         //texten += " " + content.substring(startIndex, endIndex) Om vi inte vill ha varje row som ett separat element i en array kan vi göra en stäng för varje page
- 
-        rowsArray.push(content.substring(startIndex, endIndex))
+        
+        if(startIndex +5  < endIndex){
+            rowsArray.push(content.substring(startIndex + 5, endIndex))
+        } else{
+            rowsArray.push("")
+        }
+            
+        
         content = content.substring(endIndex + 1, content.length)
+        
     }
     return new Page(rowsArray)
 }
@@ -173,6 +180,10 @@ function findTag(content, tag){
 /*Finds the first index of "</"+"tag" */    
 function findEndTag(content, tag){
     return content.indexOf("</"+tag)
+}
+/*Finds the first index of "</"+"tag" */    
+function findEndTagRow(content, tag){
+    return content.indexOf(tag)-1
 }
 
 
