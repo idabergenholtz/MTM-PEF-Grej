@@ -1,39 +1,95 @@
-var input = document.getElementById('file-input');
-input.type = 'file';
-console.log("tja")
+const page1 = "Ve dem!<br>Leksakspoeterna, fritidsesteterna<br>"
+            + "– i deras ådror flyter hallonsaft så röd.<br>"
+            + "De gömmer sig i rågfältens blåprickskjortlar,<br>"
+            + "de tar sig munnen full<br>"
+            + "av jordgubbar.<br><br>"
+            + "Men vi ska förgöra dem!<br>"
+            + "med pennknivar.<br>"
+            + "Och dricka deras bröders<br>"
+            + "bråda döds skål,<br>"
+            + "vår inbördes skål,<br>"
+            + "vår brödfödas skål<br><br>"
+            +"i hallonsaft.";
 
-input.onchange = e => { 
+const page2 = "Skulle<br> jag<br> vara <br> så <br> klok";
 
-   // getting a hold of the file reference
-    var file = e.target.files[0]
-    console.log(file.name)
-    console.log(file.type) 
-    let shouldConvert = window.confirm("Vill du konvertera " + file.name + "?")
-    if (!shouldConvert){
-        return;
-    }
-   // setting up the reader
-    var reader = new FileReader();
-    reader.readAsText(file,'UTF-8');
+const page3 = "Vem är väl den på jordens vida rymd, som njutit smaken<br>" 
+            + "av krusbär och av stora, söta, röda stickelbär,<br>"
+            + "och som härvid ej ropar ut: jag aldrig smakat maken!<br>"
+            + "Mot det en skeppslast dumma apelsiner intet är."
+            + "Själv pomeranser<br>"
+            + "jag föga anser.<br>"
+            + "Vad bjuder oss uppriktigt Afrika?<br>"
+            + "Vad visa kan Amerika?<br>"
+            + "Vad Asien? Vad allt Europa?<br>"
+            + "Jag trotsar öppet allihopa.<br>"
+            + "Men Skandinavien - det är alladar!<br>"
+            + "Blott Sverge svenska krusbär har<br>";
 
-   // here we tell the reader what to do when it's done reading...
-    reader.onload = readerEvent => {
-        var content = readerEvent.target.result; // this is the content!
-        showConvertProgress = setInterval((content) => convert(content), 1000)
-        cont = content;
-        console.log( content );
+function PageReader (){
+    return {
+        pages : [],
+        currentPageNbr : 0,
+        pageForward : function() {
+            if (this.currentPageNbr < this.pages.length - 1) {
+                this.currentPageNbr++;
+            }
+                
+        },
+        pageBackward : function() {
+            if (this.currentPageNbr > 0){
+                this.currentPageNbr--;
+            }
+                
+        },
+        setCurrentPage : function(pageNbr) {
+            pageNbr--;
+            if (pageNbr < this.pages.length && pageNbr >= 0){
+                console.log("got here")
+                this.currentPageNbr = pageNbr;
+            }
+                
+        },
+        addPage : function(page) {
+            this.pages.push(page);
+        },
+        getCurrentPage : function(){
+            return this.pages[this.currentPageNbr];
+        }
     }
-}
-var showConvertProgress;
-var percentage = 0;
-var cont;
-function convert (content){
-    document.getElementById('convertPer').textContent = 
-        "Konvertering " + percentage + "% färdig.";
-    percentage += 20;
-    if (percentage > 100){
-        percentage = 0;
-        document.getElementById('text').textContent = cont;
-        clearInterval(showConvertProgress)
+};
+
+const pageReader = PageReader();
+
+pageReader.addPage(page1);
+pageReader.addPage(page2);
+pageReader.addPage(page3);
+
+const pageView = document.getElementById("text");
+pageView.innerHTML = pageReader.getCurrentPage();
+
+const pageInput = document.getElementById("goToPage");
+
+document.getElementById("nextPage").addEventListener("click", () => {
+    pageReader.pageForward();
+    pageView.innerHTML = pageReader.getCurrentPage();
+    pageInput.placeholder = pageReader.currentPageNbr + 1;
+});
+
+document.getElementById("formerPage").addEventListener("click", () => {
+    pageReader.pageBackward();
+    pageView.innerHTML = pageReader.getCurrentPage();
+    pageInput.placeholder = pageReader.currentPageNbr + 1;
+});
+
+pageInput.addEventListener("input", () =>{
+    let newPage = parseInt(pageInput.value);
+    if (isNaN(newPage)){
+        newPage = parseInt(pageInput.placeholder);
+        console.log("haah" +newPage)
     }
-}
+    console.log(newPage)
+        
+    pageReader.setCurrentPage(newPage);
+    pageView.innerHTML = pageReader.getCurrentPage();
+})
