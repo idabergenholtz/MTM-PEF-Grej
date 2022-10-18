@@ -13,6 +13,16 @@ class Translator {
     static translate(braille) { return translateToSwedish(braille); }
 };
 
+const KNOWN_PEF_FILE_TYPES = [
+    'image/PEF',             // Where is this coming from?
+    'image/x-pentax-pef',    // PEF is actually file format for raw images; so some OS thinks .pef files should have this extension (http://fileformats.archiveteam.org/wiki/Pentax_PEF).
+    'application/x-pef+xml', // As specified in PEF spec (https://braillespecs.github.io/pef/pef-specification.html#Internet).
+]
+
+function isPefFileType(fileType) {
+    console.log(KNOWN_PEF_FILE_TYPES, fileType, KNOWN_PEF_FILE_TYPES.indexOf(fileType));
+    return KNOWN_PEF_FILE_TYPES.indexOf(fileType) != -1;
+}
 
 const fileSelector = document.getElementById('file-selector');
 fileSelector.addEventListener("input", () => {
@@ -22,10 +32,11 @@ fileSelector.addEventListener("input", () => {
         console.warn('No file selected!');
         return;
     }
+
     let pefFile = fileSelector.files[0];
     //JOHAN: Correct file type check
-    if (pefFile.type != "image/PEF"){
-        window.alert("Filen du försöker ladda är inte PEF-fil.")
+    if (!isPefFileType(pefFile.type)) {
+        window.alert("Filen du försöker ladda är inte PEF-fil.");
         return;
     }
     //JOHAN: Lägger till en check för att fråga om man valt rätt fil
