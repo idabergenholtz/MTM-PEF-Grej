@@ -100,15 +100,16 @@ class Controller {
             sizeKb <Integer>
             inputText <String>
     */
-    static run(fileName, sizeKb, inputText) {
+    static run(fileName, sizeKb, inputText, download=false) {
         // 1. Open file?
         //console.log(`Converting file: ${pefFile.name}, size: ${sizeKb} kB, type: ${pefFile.type}`);
         console.log('Giving file to parser');
         let pefTree = receiveFile(inputText)
-        console.log('Received pef tree from parser');
-        console.log(pefTree)
+        let metaData = pefTree.head.meta;
+        console.log(`Received pef tree from parser: ${metaData.title}`);
+        console.log('Entire pef object');
+        console.log(pefTree);
 
-        console.log(pefTree.head.meta.title)
         console.log('Translating all rows from braille to clear text');
 
         //let count = 0;
@@ -132,21 +133,28 @@ class Controller {
         console.log('Done translating braille to clear text');
 
         let outputFileFormat = Controller.getOutputFileFormat();
-        console.log(`Giving pef tree with clear text to outputter, using format: ${outputFileFormat}`);
+        console.log(`Using output format: ${outputFileFormat}`);
+
+        console.log(`Creating first page from meta date in header: ${metaData}`);
+        let firstPage = Outputter.formatFirstPage(metaData, outputFileFormat);
+
+        console.log(firstPage);
+
+        console.log('Giving pef tree with clear text to outputter');
         let output = Outputter.format(pefTree, outputFileFormat);
         console.log('Outputter complete');
-        let outputFileName = Controller.getOutputFileName(fileName);
-        
-        console.log(`Finished, downloading file: ${outputFileName}`);
+
+
+        if (download) {
+            let outputFileName = Controller.getOutputFileName(fileName);
+            console.log(`Finished, downloading file: ${outputFileName}`);
+            download(outputFileName, output);
+        }
 
         //JOHAN: Skippar nedladdning och skriver ut direkt på sidan (för demo och diskussion)
-        document.getElementById('text').innerHTML = output;
-        //download(outputFileName, output);
+        let html = firstPage + output;
+        document.getElementById('text').innerHTML = html;
     }
 }
-
-
-//download("nisse.html", "hejhej!");
-
 
 export { Controller };

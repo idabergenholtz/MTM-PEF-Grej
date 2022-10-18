@@ -7,21 +7,45 @@ const OutputFormats = {
 
 
 class OutputFormatter {
-    // --- Abstract methods --- //
-    static formatBodyStart()    { throw new Error("Not implemented!"); }
-    static formatVolumeStart()  { throw new Error("Not implemented!"); }
-    static formatSectionStart() { throw new Error("Not implemented!"); }
-    static formatPageStart()    { throw new Error("Not implemented!"); }
-    static formatRowStart()     { throw new Error("Not implemented!"); }
+    /*
+        Abstract class with all formatting methods used by the Outputter to
+        format the output.
+    */
 
-    static formatBodyEnd()      { throw new Error("Not implemented!"); }
-    static formatVolumeEnd()    { throw new Error("Not implemented!"); }
-    static formatSectionEnd()   { throw new Error("Not implemented!"); }
-    static formatPageEnd()      { throw new Error("Not implemented!"); }
-    static formatRowEnd()       { throw new Error("Not implemented!"); }
+    // --- First page ---/
+    static formatFirstPageTitleStart()  { throw new Error("Not implemented!"); }
+    static formatFirstPageAuthorStart() { throw new Error("Not implemented!"); }
+    static formatFirstPageDateStart()   { throw new Error("Not implemented!"); }
+
+    static formatFirstPageTitleEnd()  { throw new Error("Not implemented!"); }
+    static formatFirstPageAuthorEnd() { throw new Error("Not implemented!"); }
+    static formatFirstPageDateEnd()   { throw new Error("Not implemented!"); }
+
+    // --- Normal content ---/
+    static formatBodyStart()            { throw new Error("Not implemented!"); }
+    static formatVolumeStart()          { throw new Error("Not implemented!"); }
+    static formatSectionStart()         { throw new Error("Not implemented!"); }
+    static formatPageStart()            { throw new Error("Not implemented!"); }
+    static formatRowStart()             { throw new Error("Not implemented!"); }
+
+    static formatBodyEnd()              { throw new Error("Not implemented!"); }
+    static formatVolumeEnd()            { throw new Error("Not implemented!"); }
+    static formatSectionEnd()           { throw new Error("Not implemented!"); }
+    static formatPageEnd()              { throw new Error("Not implemented!"); }
+    static formatRowEnd()               { throw new Error("Not implemented!"); }
 }
 
 class OutputFormatterHtml extends OutputFormatter {
+    // First page
+    static formatFirstPageTitleStart()  { return '<h2 class="first-page-title">'; }
+    static formatFirstPageAuthorStart() { return '<h4 class="first-page-author">'; }
+    static formatFirstPageDateStart()   { return '<h6 class="first-page-date">'; }
+
+    static formatFirstPageTitleEnd()  { return '</h2>'; }
+    static formatFirstPageAuthorEnd() { return '</h4>'; }
+    static formatFirstPageDateEnd()   { return '</h6>'; }
+
+    // Normal content
     static formatBodyStart()    { return '<div class="body">'; }
     static formatVolumeStart()  { return '<div class="volume">'; }
     static formatSectionStart() { return '<div class="section">'; }
@@ -54,6 +78,7 @@ class Outputter {
     /*
         Parameters:
             pefObject <Pef>
+            outputFormat <String> What output format we want (as string), eg 'HTML'
         Returns:
             <String>: Formatted output text
     */
@@ -80,7 +105,43 @@ class Outputter {
         return output;
     }
 
+    /*
+        Parameters:
+            metaData <Meta>
+            outputFormat <String> What output format we want (as string), eg 'HTML'
+        Returns:
+            <String>: Formatted first page
+    */
+    static formatFirstPage(metaData, outputFormat) {
+        let outputFormatter = Outputter.getOutputFormatter(outputFormat);
+
+        let output = '';
+
+        output += outputFormatter.formatFirstPageTitleStart() +
+                  metaData.title +
+                  outputFormatter.formatFirstPageTitleEnd();
+
+        output += outputFormatter.formatFirstPageAuthorStart() +
+                  metaData.creator +
+                  outputFormatter.formatFirstPageAuthorEnd();
+
+        output += outputFormatter.formatFirstPageDateStart() +
+                  metaData.date +
+                  outputFormatter.formatFirstPageDateEnd();
+
+        return output;
+    }
+
 }
+
+class FirstPageMetaData {
+    constructor(title, creator, date) {
+        this.title = title;
+        this.creator = creator;
+        this.date = date;
+    }
+}
+
 
 
 export { Outputter, OutputFormats };
