@@ -46,13 +46,14 @@ fileSelector.addEventListener("input", () => {
     }
     fileName = pefFile.name
     let sizeKb = pefFile.size / 1000;
-    let reader = new FileReader()
+    let reader = new FileReader();
     reader.addEventListener("loadend", () => {//waits for the file to finish loading
-        text = reader.result
+        let inputText = reader.result
         fileRead = true;
         //JOHAN: Kör run direkt istället för konvertera-knapp
-        Controller.run();
+        Controller.run(fileName, sizeKb, inputText);
     });
+
     reader.readAsText(pefFile)//load file
 })
 /*
@@ -93,14 +94,20 @@ class Controller {
         return 'HTML';
     }
 
-    static run() {
+    /*
+        Parameters:
+            filename <String>
+            sizeKb <Integer>
+            inputText <String>
+    */
+    static run(fileName, sizeKb, inputText) {
         // 1. Open file?
         //console.log(`Converting file: ${pefFile.name}, size: ${sizeKb} kB, type: ${pefFile.type}`);
         console.log('Giving file to parser');
-        let pefTree = receiveFile(text)
+        let pefTree = receiveFile(inputText)
         console.log('Received pef tree from parser');
         console.log(pefTree)
-        
+
         console.log(pefTree.head.meta.title)
         console.log('Translating all rows from braille to clear text');
 
