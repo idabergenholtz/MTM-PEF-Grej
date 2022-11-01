@@ -16,7 +16,7 @@ const page2 = "Skulle<br> jag<br> vara <br> så <br> klok";
 const page3 = "Vem är väl den på jordens vida rymd, som njutit smaken<br>" 
             + "av krusbär och av stora, söta, röda stickelbär,<br>"
             + "och som härvid ej ropar ut: jag aldrig smakat maken!<br>"
-            + "Mot det en skeppslast dumma apelsiner intet är."
+            + "Mot det en skeppslast dumma apelsiner intet är.<br>"
             + "Själv pomeranser<br>"
             + "jag föga anser.<br>"
             + "Vad bjuder oss uppriktigt Afrika?<br>"
@@ -45,7 +45,6 @@ function PageReader (){
         setCurrentPage : function(pageNbr) {
             pageNbr--;
             if (pageNbr < this.pages.length && pageNbr >= 0){
-                console.log("got here")
                 this.currentPageNbr = pageNbr;
             }
                 
@@ -86,10 +85,7 @@ pageInput.addEventListener("input", () =>{
     let newPage = parseInt(pageInput.value);
     if (isNaN(newPage)){
         newPage = parseInt(pageInput.placeholder);
-        console.log("haah" +newPage)
     }
-    console.log(newPage)
-        
     pageReader.setCurrentPage(newPage);
     pageView.innerHTML = pageReader.getCurrentPage();
 })

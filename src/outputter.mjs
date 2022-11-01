@@ -82,7 +82,7 @@ class Outputter {
         Returns:
             <String>: Formatted output text
     */
-    static format(pefObject, outputFormat) {
+    static format(pefObject, outputFormat, pageReader) {
         let outputFormatter = Outputter.getOutputFormatter(outputFormat);
         let output = '';
         for (let [volumes_i, volume] of pefObject.body.volumes.entries()) {
@@ -90,13 +90,16 @@ class Outputter {
             for (let [section_i, section] of volume.sections.entries()) {
                 output += outputFormatter.formatSectionStart();
                 for (let [page_i, page] of section.pages.entries()) {
+                    let outputIndex = output.length;
                     output += outputFormatter.formatPageStart();
+                    
                     for (let [row_i, row] of page.rows.entries()) {
                         output += outputFormatter.formatRowStart();
                         output += row;//Ändrade från row.text till endast row / Daniel
                         output += outputFormatter.formatRowEnd();
                     }
                     output += outputFormatter.formatPageEnd();
+                    pageReader.addPage(output.substring(outputIndex, output.length-1));
                 }
                 output += outputFormatter.formatSectionEnd();
             }

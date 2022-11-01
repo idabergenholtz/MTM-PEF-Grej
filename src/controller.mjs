@@ -24,6 +24,20 @@ function isPefFileType(fileType) {
     return KNOWN_PEF_FILE_TYPES.indexOf(fileType) != -1;
 }
 
+
+document.getElementById('backToConversion').addEventListener("click", () => {
+    document.getElementById("convertingText").style = "display:none";
+    toggleDiv(true);
+});
+
+function toggleDiv(toConvertDiv){
+    let convDiv = document.getElementById("convertDiv");
+    let readDiv = document.getElementById("readerDiv");
+    
+    readDiv.style.display = toConvertDiv ? "none" : "block";
+    convDiv.style.display = toConvertDiv ? "block" : "none";
+}
+
 const fileSelector = document.getElementById('file-selector');
 fileSelector.addEventListener("input", () => {
     fileRead = false;
@@ -73,6 +87,45 @@ function download(filename, text) {
     document.body.removeChild(downloadDummyElement);
 }
 
+function PageReader (){
+    return {
+        pages : [],
+        currentPageNbr : 0,
+        pageForward : function() {
+            if (this.currentPageNbr < this.pages.length - 1) {
+                this.currentPageNbr++;
+            }
+                
+        },
+        pageBackward : function() {
+            if (this.currentPageNbr > 0){
+                this.currentPageNbr--;
+            }
+                
+        },
+        setCurrentPage : function(pageNbr) {
+            pageNbr--;
+            if (pageNbr < this.pages.length && pageNbr >= 0){
+                this.currentPageNbr = pageNbr;
+            }
+                
+        },
+        addPage : function(page) {
+            this.pages.push(page);
+        },
+        addFirstPage : function(page) {
+            this.pages.unshift(page);
+        },
+        getCurrentPage : function(){
+            return this.pages[this.currentPageNbr];
+        },
+        getNbrOfPages(){
+            return this.pages.length;
+        }
+    }
+};
+
+let pageReader = PageReader();
 
 
 class Controller {
@@ -101,6 +154,8 @@ class Controller {
             inputText <String>
     */
     static run(fileName, sizeKb, inputText, download=false) {
+        
+        pageReader = PageReader();
         // 1. Open file?
         //console.log(`Converting file: ${pefFile.name}, size: ${sizeKb} kB, type: ${pefFile.type}`);
         console.log('Giving file to parser');
@@ -111,6 +166,8 @@ class Controller {
         console.log(pefTree);
 
         console.log('Translating all rows from braille to clear text');
+        
+        document.getElementById("convertingText").style = "display:block";
 
         //let count = 0;
         for (let volume of pefTree.body.volumes) {
@@ -141,7 +198,7 @@ class Controller {
         console.log(firstPage);
 
         console.log('Giving pef tree with clear text to outputter');
-        let output = Outputter.format(pefTree, outputFileFormat);
+        let output = Outputter.format(pefTree, outputFileFormat, pageReader);
         console.log('Outputter complete');
 
 
@@ -152,9 +209,42 @@ class Controller {
         }
 
         //JOHAN: Skippar nedladdning och skriver ut direkt på sidan (för demo och diskussion)
-        let html = firstPage + output;
-        document.getElementById('text').innerHTML = html;
+        //let html = firstPage + output;
+        //document.getElementById('text').innerHTML = html;
+    
+        pageReader.addFirstPage(firstPage);
+        displayCurrentPage();
+        toggleDiv(false);
     }
 }
+
+const pageView = document.getElementById("text");
+
+const pageInput = document.getElementById("goToPage");
+
+function displayCurrentPage(){
+    pageView.innerHTML = pageReader.getCurrentPage();
+    pageInput.value = "";
+    pageInput.placeholder = (pageReader.currentPageNbr + 1) + " (av " + pageReader.getNbrOfPages() + ")";
+} 
+
+document.getElementById("nextPage").addEventListener("click", () => {
+    pageReader.pageForward();
+    displayCurrentPage();
+});
+
+document.getElementById("formerPage").addEventListener("click", () => {
+    pageReader.pageBackward();
+    displayCurrentPage();
+});
+
+pageInput.addEventListener("input", () =>{
+    let newPage = parseInt(pageInput.value);
+    if (isNaN(newPage)){
+        newPage = parseInt(pageInput.placeholder);
+    }
+    pageReader.setCurrentPage(newPage);
+    pageView.innerHTML = pageReader.getCurrentPage();
+})
 
 export { Controller };
