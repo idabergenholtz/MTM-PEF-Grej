@@ -27,6 +27,7 @@ function isPefFileType(fileType) {
 
 document.getElementById('backToConversion').addEventListener("click", () => {
     document.getElementById("convertingText").style = "display:none";
+    document.getElementById("chosenFile").innerHTML = "- ingen fil vald";
     toggleDiv(true);
 });
 
@@ -58,9 +59,14 @@ fileSelector.addEventListener("input", () => {
     if (!shouldConvert){
         return;
     }
+
     fileName = pefFile.name
     let sizeKb = pefFile.size / 1000;
     let reader = new FileReader();
+
+    document.getElementById("chosenFile").innerHTML = fileName;
+    document.getElementById("convertingText").style = "display:block";
+
     reader.addEventListener("loadend", () => {//waits for the file to finish loading
         let inputText = reader.result
         fileRead = true;
@@ -166,8 +172,6 @@ class Controller {
         console.log(pefTree);
 
         console.log('Translating all rows from braille to clear text');
-        
-        document.getElementById("convertingText").style = "display:block";
 
         //let count = 0;
         for (let volume of pefTree.body.volumes) {
