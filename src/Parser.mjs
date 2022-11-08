@@ -129,7 +129,7 @@ function createPages(content){
 
 
             let temp = createRows(content.substring(startIndex, endIndex))  //calls createRows with the substring from <page> to </page> as parameter
-            pagesArray.push(temp)   //adds the Page object containing an array of Strings to the pagesArray
+            if(temp.rows.length > 0) pagesArray.push(temp)   //adds the Page object containing an array of Strings to the pagesArray
 
 
         } catch(error){ //Ni kan bortse från denna try - catch för nu, verkar ha löst problemet iaf för de exempel vi har tillgång till just nu
