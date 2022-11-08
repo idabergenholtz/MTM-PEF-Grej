@@ -18,6 +18,7 @@ test('tests if the Parser returns correct data', () => {
         expect(PEF.head.meta.title).not.toBeNull();
         expect(PEF.head.meta.title).toBe("Butterfly Test Pattern");
         expect(PEF.head.meta.author).toBe("Joel Håkansson");
+        expect(true).toBe(false);
     });
 });
 
@@ -34,7 +35,22 @@ test('tests if the Outputter returns correct data', () => {
         if (err) throw err;
         expect(data).toBeDefined();
         PEF = receiveFile(data);
-        var t = Outputter.format(PEF, OutputFormats.HTML);
-        console.log(t);
+        var text = Outputter.format(PEF, OutputFormats.HTML);
+        expect(text).toBeDefined();
+        var textBeginsWithCorrectData = text.beginsWith(
+            "<h2 class=\"first-page-title\">Butterfly Test Pattern</h2>" +
+            "<h4 class=\"first-page-author\">Joel Håkansson</h4>" +
+            "<h6 class=\"first-page-date\">2008-09-26</h6>" +
+            "<div class=\"volume\">" + 
+            "<div class=\"section\">" + 
+            "<div class=\"page\">"
+        );
+        var textEndsWithCorrectData = text.endsWith(
+            "</div>" +
+            "</div>" +
+            "</div>"
+        );
+        expect(textBeginsWithCorrectData && textEndsWithCorrectData).toBe(true)
+        expect(true).toBe(false);
     });
 });
