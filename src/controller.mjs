@@ -13,6 +13,31 @@ class Translator {
     static translate(braille) { return translateToSwedish(braille); }
 };
 
+const KNOWN_PEF_FILE_TYPES = [
+    'image/PEF',             // Where is this coming from?
+    'image/x-pentax-pef',    // PEF is actually file format for raw images; so some OS thinks .pef files should have this extension (http://fileformats.archiveteam.org/wiki/Pentax_PEF).
+    'application/x-pef+xml', // As specified in PEF spec (https://braillespecs.github.io/pef/pef-specification.html#Internet).
+]
+
+function isPefFileType(fileType) {
+    console.log(KNOWN_PEF_FILE_TYPES, fileType, KNOWN_PEF_FILE_TYPES.indexOf(fileType));
+    return KNOWN_PEF_FILE_TYPES.indexOf(fileType) != -1;
+}
+
+
+document.getElementById('backToConversion').addEventListener("click", () => {
+    document.getElementById("convertingText").style = "display:none";
+    document.getElementById("chosenFile").innerHTML = "- ingen fil vald";
+    toggleDiv(true);
+});
+
+function toggleDiv(toConvertDiv){
+    let convDiv = document.getElementById("convertDiv");
+    let readDiv = document.getElementById("readerDiv");
+    
+    readDiv.style.display = toConvertDiv ? "none" : "block";
+    convDiv.style.display = toConvertDiv ? "block" : "none";
+}
 
 const fileSelector = document.getElementById('file-selector');
 fileSelector.addEventListener("input", () => {
@@ -22,10 +47,11 @@ fileSelector.addEventListener("input", () => {
         console.warn('No file selected!');
         return;
     }
+
     let pefFile = fileSelector.files[0];
     //JOHAN: Correct file type check
-    if (pefFile.type != "image/PEF"){
-        window.alert("Filen du försöker ladda är inte PEF-fil.")
+    if (!isPefFileType(pefFile.type)) {
+        window.alert("Filen du försöker ladda är inte PEF-fil.");
         return;
     }
     //JOHAN: Lägger till en check för att fråga om man valt rätt fil
@@ -33,15 +59,21 @@ fileSelector.addEventListener("input", () => {
     if (!shouldConvert){
         return;
     }
+
     fileName = pefFile.name
     let sizeKb = pefFile.size / 1000;
-    let reader = new FileReader()
+    let reader = new FileReader();
+
+    document.getElementById("chosenFile").innerHTML = fileName;
+    document.getElementById("convertingText").style = "display:block";
+
     reader.addEventListener("loadend", () => {//waits for the file to finish loading
-        text = reader.result
+        let inputText = reader.result
         fileRead = true;
         //JOHAN: Kör run direkt istället för konvertera-knapp
-        Controller.run();
+        Controller.run(fileName, sizeKb, inputText);
     });
+
     reader.readAsText(pefFile)//load file
 })
 /*
@@ -61,6 +93,45 @@ function download(filename, text) {
     document.body.removeChild(downloadDummyElement);
 }
 
+function PageReader (){
+    return {
+        pages : [],
+        currentPageNbr : 0,
+        pageForward : function() {
+            if (this.currentPageNbr < this.pages.length - 1) {
+                this.currentPageNbr++;
+            }
+                
+        },
+        pageBackward : function() {
+            if (this.currentPageNbr > 0){
+                this.currentPageNbr--;
+            }
+                
+        },
+        setCurrentPage : function(pageNbr) {
+            pageNbr--;
+            if (pageNbr < this.pages.length && pageNbr >= 0){
+                this.currentPageNbr = pageNbr;
+            }
+                
+        },
+        addPage : function(page) {
+            this.pages.push(page);
+        },
+        addFirstPage : function(page) {
+            this.pages.unshift(page);
+        },
+        getCurrentPage : function(){
+            return this.pages[this.currentPageNbr];
+        },
+        getNbrOfPages(){
+            return this.pages.length;
+        }
+    }
+};
+
+let pageReader = PageReader();
 
 
 class Controller {
@@ -82,15 +153,24 @@ class Controller {
         return 'HTML';
     }
 
-    static run() {
+    /*
+        Parameters:
+            filename <String>
+            sizeKb <Integer>
+            inputText <String>
+    */
+    static run(fileName, sizeKb, inputText, download=false) {
+        
+        pageReader = PageReader();
         // 1. Open file?
         //console.log(`Converting file: ${pefFile.name}, size: ${sizeKb} kB, type: ${pefFile.type}`);
         console.log('Giving file to parser');
-        let pefTree = receiveFile(text)
-        console.log('Received pef tree from parser');
-        console.log(pefTree)
-        
-        console.log(pefTree.head.meta.title)
+        let pefTree = receiveFile(inputText)
+        let metaData = pefTree.head.meta;
+        console.log(`Received pef tree from parser: ${metaData.title}`);
+        console.log('Entire pef object');
+        console.log(pefTree);
+
         console.log('Translating all rows from braille to clear text');
 
         //let count = 0;
@@ -114,21 +194,61 @@ class Controller {
         console.log('Done translating braille to clear text');
 
         let outputFileFormat = Controller.getOutputFileFormat();
-        console.log(`Giving pef tree with clear text to outputter, using format: ${outputFileFormat}`);
-        let output = Outputter.format(pefTree, outputFileFormat);
+        console.log(`Using output format: ${outputFileFormat}`);
+
+        console.log(`Creating first page from meta date in header: ${metaData}`);
+        let firstPage = Outputter.formatFirstPage(metaData, outputFileFormat);
+
+        console.log(firstPage);
+
+        console.log('Giving pef tree with clear text to outputter');
+        let output = Outputter.format(pefTree, outputFileFormat, pageReader);
         console.log('Outputter complete');
-        let outputFileName = Controller.getOutputFileName(fileName);
-        
-        console.log(`Finished, downloading file: ${outputFileName}`);
+
+
+        if (download) {
+            let outputFileName = Controller.getOutputFileName(fileName);
+            console.log(`Finished, downloading file: ${outputFileName}`);
+            download(outputFileName, output);
+        }
 
         //JOHAN: Skippar nedladdning och skriver ut direkt på sidan (för demo och diskussion)
-        document.getElementById('text').innerHTML = output;
-        //download(outputFileName, output);
+        //let html = firstPage + output;
+        //document.getElementById('text').innerHTML = html;
+    
+        pageReader.addFirstPage(firstPage);
+        displayCurrentPage();
+        toggleDiv(false);
     }
 }
 
+const pageView = document.getElementById("text");
 
-//download("nisse.html", "hejhej!");
+const pageInput = document.getElementById("goToPage");
 
+function displayCurrentPage(){
+    pageView.innerHTML = pageReader.getCurrentPage();
+    pageInput.value = "";
+    pageInput.placeholder = (pageReader.currentPageNbr + 1) + " (av " + pageReader.getNbrOfPages() + ")";
+} 
+
+document.getElementById("nextPage").addEventListener("click", () => {
+    pageReader.pageForward();
+    displayCurrentPage();
+});
+
+document.getElementById("formerPage").addEventListener("click", () => {
+    pageReader.pageBackward();
+    displayCurrentPage();
+});
+
+pageInput.addEventListener("input", () =>{
+    let newPage = parseInt(pageInput.value);
+    if (isNaN(newPage)){
+        newPage = parseInt(pageInput.placeholder);
+    }
+    pageReader.setCurrentPage(newPage);
+    pageView.innerHTML = pageReader.getCurrentPage();
+})
 
 export { Controller };
