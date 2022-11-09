@@ -131,7 +131,6 @@ function createPages(content){
             let temp = createRows(content.substring(startIndex, endIndex))  //calls createRows with the substring from <page> to </page> as parameter
             if(temp.rows.length > 0) pagesArray.push(temp)   //adds the Page object containing an array of Strings to the pagesArray
 
-
         } catch(error){ //Ni kan bortse från denna try - catch för nu, verkar ha löst problemet iaf för de exempel vi har tillgång till just nu
             console.error(error)
             console.log(test)   //för att ta reda på vilken sida felet är på
@@ -161,7 +160,9 @@ Vi kanske vill ha ett sätt att hitta <row/> för styckesuppdelning
         //texten += " " + content.substring(startIndex, endIndex) Om vi inte vill ha varje row som ett separat element i en array kan vi göra en stäng för varje page
         
         if(startIndex +5  < endIndex){
-            rowsArray.push(content.substring(startIndex + 5, endIndex))
+
+            let rowContent = content.substring(startIndex + 5, endIndex)
+            rowsArray.push(rowContent)
         } else{
             rowsArray.push("")
         }
@@ -181,7 +182,7 @@ function findTag(content, tag){
 function findEndTag(content, tag){
     return content.indexOf("</"+tag)
 }
-/*Finds the first index of "</"+"tag" */    
+/*Finds the first index of "</"+"tag" - specific for createRows*/    
 function findEndTagRow(content, tag){
     return content.indexOf(tag)-1
 }
