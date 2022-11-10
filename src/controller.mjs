@@ -24,6 +24,21 @@ function isPefFileType(fileType) {
     return KNOWN_PEF_FILE_TYPES.indexOf(fileType) != -1;
 }
 
+
+document.getElementById('backToConversion').addEventListener("click", () => {
+    document.getElementById("convertingText").style = "display:none";
+    document.getElementById("chosenFile").innerHTML = "- ingen fil vald";
+    toggleDiv(true);
+});
+
+function toggleDiv(toConvertDiv){
+    let convDiv = document.getElementById("convertDiv");
+    let readDiv = document.getElementById("readerDiv");
+    
+    readDiv.style.display = toConvertDiv ? "none" : "block";
+    convDiv.style.display = toConvertDiv ? "block" : "none";
+}
+
 const fileSelector = document.getElementById('file-selector');
 fileSelector.addEventListener("input", () => {
     fileRead = false;
@@ -44,9 +59,14 @@ fileSelector.addEventListener("input", () => {
     if (!shouldConvert){
         return;
     }
+
     fileName = pefFile.name
     let sizeKb = pefFile.size / 1000;
     let reader = new FileReader();
+
+    document.getElementById("chosenFile").innerHTML = fileName;
+    document.getElementById("convertingText").style = "display:block";
+
     reader.addEventListener("loadend", () => {//waits for the file to finish loading
         let inputText = reader.result
         fileRead = true;
@@ -73,6 +93,102 @@ function download(filename, text) {
     document.body.removeChild(downloadDummyElement);
 }
 
+function PageReader (){
+    return {
+        pages : [],
+        currentPageNbr : 0,
+        maxPageNbr : 0,
+        pageForward : function() {
+            if (this.currentPageNbr < this.pages.length-1) {
+                this.currentPageNbr++;
+            }
+                
+        },
+        pageBackward : function() {
+            if (this.currentPageNbr > 0){
+                this.currentPageNbr--;
+            }
+                
+        },
+        setCurrentPage : function(pageNbr) {
+            if (pageNbr > this.maxPageNbr || pageNbr < 0){
+                return;
+            }
+            let index = pageNbr;
+            let nbr = this.pages[index].pageNbr;
+            //Look ahead
+            while (nbr != pageNbr && index < this.pages.length-1){
+                index++;
+                nbr = this.pages[index].pageNbr;
+            }
+            if (nbr === pageNbr){
+                this.currentPageNbr = index;
+                return;
+            }
+
+            //if correct page was not ahead, look back
+            index = pageNbr;
+            while (nbr != pageNbr && index > 0){
+                index--;
+                nbr = this.pages[index].pageNbr;
+            }
+            if (nbr === pageNbr){
+                this.currentPageNbr = index;
+            }
+            else{
+                this.currentPageNbr = pageNbr;
+            }
+        },
+        addPage : function(page, outputFormatter) {
+            
+            let newPage = ""
+            newPage += outputFormatter.formatPageStart();
+            let pageRows = page.rows.entries();
+            let pageNbr = -1;
+            for (let [row_i, row] of pageRows) {
+                if (row_i == 0){
+                    let str = row.replace(/\s+/g, '');
+                    pageNbr = parseInt(str);
+                    pageNbr = !isNaN(pageNbr) ? pageNbr : -1;
+                }
+                newPage += outputFormatter.formatRowStart();
+                newPage += row;//Ändrade från row.text till endast row / Daniel
+                newPage += outputFormatter.formatRowEnd();
+            }
+            newPage += outputFormatter.formatPageEnd();
+            
+            this.maxPageNbr +=  pageNbr > 0 ? 1 : 0;
+            const fullPage = {text: newPage, pageNbr: this.maxPageNbr};
+            this.pages.push(fullPage);
+            
+        },
+        addFirstPage : function(page) {
+            const fullPage = {text: page, pageNbr: 0}
+            this.pages.unshift(fullPage);
+        },
+        getCurrentPage : function() {
+            return this.pages[this.currentPageNbr].text;
+        },
+        getNbrOfPages(){
+            return this.maxPageNbr;
+        },
+        getCurrentPageNbr(){
+            return this.pages[this.currentPageNbr].pageNbr;
+        }, 
+        recalibrate(){
+            if (this.maxPageNbr === 0){
+                console.log("did not find any page numbers")
+                this.maxPageNbr = this.pages.length-1;
+                for (i = 0; i < this.pages.length; i++){
+                    this.pages[i].pageNbr = i;
+                }
+            }
+        }
+    }
+};
+
+
+let pageReader = PageReader();
 
 
 class Controller {
@@ -101,6 +217,8 @@ class Controller {
             inputText <String>
     */
     static run(fileName, sizeKb, inputText, download=false) {
+        
+        pageReader = PageReader();
         // 1. Open file?
         //console.log(`Converting file: ${pefFile.name}, size: ${sizeKb} kB, type: ${pefFile.type}`);
         console.log('Giving file to parser');
@@ -141,7 +259,7 @@ class Controller {
         console.log(firstPage);
 
         console.log('Giving pef tree with clear text to outputter');
-        let output = Outputter.format(pefTree, outputFileFormat);
+        let output = Outputter.format(pefTree, outputFileFormat, pageReader);
         console.log('Outputter complete');
 
 
@@ -152,9 +270,43 @@ class Controller {
         }
 
         //JOHAN: Skippar nedladdning och skriver ut direkt på sidan (för demo och diskussion)
-        let html = firstPage + output;
-        document.getElementById('text').innerHTML = html;
+        //let html = firstPage + output;
+        //document.getElementById('text').innerHTML = html;
+    
+        pageReader.addFirstPage(firstPage);
+        pageReader.recalibrate();
+        displayCurrentPage();
+        toggleDiv(false);
     }
 }
+
+const pageView = document.getElementById("text");
+
+const pageInput = document.getElementById("goToPage");
+
+function displayCurrentPage(){
+    pageView.innerHTML = pageReader.getCurrentPage();
+    pageInput.value = "";
+    pageInput.placeholder = (pageReader.getCurrentPageNbr()) + " (av " + pageReader.getNbrOfPages() + ")";
+} 
+
+document.getElementById("nextPage").addEventListener("click", () => {
+    pageReader.pageForward();
+    displayCurrentPage();
+});
+
+document.getElementById("formerPage").addEventListener("click", () => {
+    pageReader.pageBackward();
+    displayCurrentPage();
+});
+
+pageInput.addEventListener("input", () =>{
+    let newPage = parseInt(pageInput.value);
+    if (isNaN(newPage)){
+        newPage = parseInt(pageInput.placeholder);
+    }
+    pageReader.setCurrentPage(newPage);
+    pageView.innerHTML = pageReader.getCurrentPage();
+})
 
 export { Controller };
