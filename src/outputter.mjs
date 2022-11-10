@@ -99,7 +99,7 @@ class Outputter {
                         output += outputFormatter.formatRowEnd();
                     }
                     output += outputFormatter.formatPageEnd();
-                    pageReader.addPage(output.substring(outputIndex, output.length-1));
+                    pageReader.addPage(page, outputFormatter);
                 }
                 output += outputFormatter.formatSectionEnd();
             }
