@@ -61,6 +61,7 @@ fileSelector.addEventListener("input", () => {
     }
 
     fileName = pefFile.name
+
     let sizeKb = pefFile.size / 1000;
     let reader = new FileReader();
 
@@ -179,7 +180,7 @@ function PageReader (){
             if (this.maxPageNbr === 0){
                 console.log("did not find any page numbers")
                 this.maxPageNbr = this.pages.length-1;
-                for (i = 0; i < this.pages.length; i++){
+                for (let i = 0; i < this.pages.length; i++){
                     this.pages[i].pageNbr = i;
                 }
             }
@@ -275,6 +276,14 @@ class Controller {
     
         pageReader.addFirstPage(firstPage);
         pageReader.recalibrate();
+        
+        //look if in local storage
+        let lastPage = window.localStorage.getItem(fileName); //identifier global fileName
+        if (lastPage === null){
+            window.localStorage.setItem(fileName, "0");
+            lastPage = "0";
+        }
+        pageReader.setCurrentPage(parseInt(lastPage));
         displayCurrentPage();
         toggleDiv(false);
     }
@@ -287,7 +296,10 @@ const pageInput = document.getElementById("goToPage");
 function displayCurrentPage(){
     pageView.innerHTML = pageReader.getCurrentPage();
     pageInput.value = "";
-    pageInput.placeholder = (pageReader.getCurrentPageNbr()) + " (av " + pageReader.getNbrOfPages() + ")";
+    let nbr = pageReader.getCurrentPageNbr();
+    pageInput.placeholder = nbr + " (av " + pageReader.getNbrOfPages() + ")";
+    window.localStorage.setItem(fileName, ""+nbr);
+    document.getElementById("newPage").focus();
 } 
 
 document.getElementById("nextPage").addEventListener("click", () => {
@@ -307,6 +319,10 @@ pageInput.addEventListener("input", () =>{
     }
     pageReader.setCurrentPage(newPage);
     pageView.innerHTML = pageReader.getCurrentPage();
+})
+
+pageInput.addEventListener("blur", () => {
+    displayCurrentPage();
 })
 
 export { Controller };
