@@ -299,6 +299,7 @@ function displayCurrentPage(){
     let nbr = pageReader.getCurrentPageNbr();
     pageInput.placeholder = nbr + " (av " + pageReader.getNbrOfPages() + ")";
     window.localStorage.setItem(fileName, ""+nbr);
+    document.getElementById("newPage").focus();
 } 
 
 document.getElementById("nextPage").addEventListener("click", () => {
@@ -318,6 +319,10 @@ pageInput.addEventListener("input", () =>{
     }
     pageReader.setCurrentPage(newPage);
     pageView.innerHTML = pageReader.getCurrentPage();
+})
+
+pageInput.addEventListener("blur", () => {
+    displayCurrentPage();
 })
 
 export { Controller };
