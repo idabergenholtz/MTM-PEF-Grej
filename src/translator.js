@@ -1,4 +1,4 @@
-import {alphabetTable, uppercaseSign, numbersTable, numberSign, punctuationTable, spaces} from "./swedishTables.mjs"
+import {alphabetTable, uppercaseSign, numbersTable, numberSign, punctuationTable, spaces} from "./swedishTables.js"
 
 //https://www.mtm.se/globalassets/punktskriftsnamnden/svenska_skrivregler_for_punktskrift.pdf
 

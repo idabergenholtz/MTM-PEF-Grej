@@ -1,4 +1,4 @@
-import { Pef } from './pef.mjs';
+import { Pef } from './pef.js';
 
 
 const OutputFormats = {
@@ -92,7 +92,7 @@ class Outputter {
                 for (let [page_i, page] of section.pages.entries()) {
                     let outputIndex = output.length;
                     output += outputFormatter.formatPageStart();
-                    
+
                     for (let [row_i, row] of page.rows.entries()) {
                         output += outputFormatter.formatRowStart();
                         output += row;//Ändrade från row.text till endast row / Daniel
