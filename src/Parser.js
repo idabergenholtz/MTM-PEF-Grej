@@ -1,4 +1,4 @@
-import { Body, Head, Page, Pef, Section, Volume} from "./pef.mjs";
+import { Body, Head, Page, Pef, Section, Volume} from "./pef.js";
 //document.getElementById("pefDoc").addEventListener('change', () => readFile())
 
 let myPefObject
