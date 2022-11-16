@@ -19,6 +19,7 @@ const htmlFileSelector = document.getElementById('file-selector');
 
 const htmlBackToConversion = document.getElementById('backToConversion');
 const htmlNextPage = document.getElementById('nextPage');
+const htmlNewPage = document.getElementById('newPage');
 const htmlPreviousPage = document.getElementById('previousPage');
 
 const htmlChosenFile = document.getElementById("chosenFile");
@@ -110,8 +111,8 @@ function downloadFile(filename, text) {
 function displayCurrentPage(){
     htmlPageView.innerHTML = pageReader.getCurrentPage();
     let pageNumber = pageReader.getCurrentPageNbr();
-    setPageNumber(pageNumber);
-    htmlNextPage.focus();
+    setPageNumber(pageNumber, true);
+    htmlNewPage.focus();
 }
 
 function formatPagePlaceHoler(pageNbr) {
@@ -137,7 +138,8 @@ function goBackToConversion() {
     pageReader.reset();
 
     // Question: Do we want to reset the page number here?
-    setPageNumber(0, true);
+    //no
+    //setPageNumber(0, true);
 };
 
 function nextPage() {
