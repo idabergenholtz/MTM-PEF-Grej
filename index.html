@@ -1,1 +1,45 @@
-/home/victor/skola/utbytesstudier/courses/courses/MAM40_Projekt/MTM-PEF-Grej/src/index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id ="convertDiv">
+        <h2>Läs punktskrift direkt</h2> <p>
+            När du har laddat ner en punktskriftsbok från Legimus 
+            kan du läsa den här med din punktdisplay.</p>
+        <input id="file-selector" type="file" accept=".pef" style="display:none">
+        <button id="file-select-btn" onclick= "document.getElementById('file-selector').click()">
+            Välj fil (.pef)
+        </button>
+        <div id ="chosenFile">- ingen fil vald</div>
+        <!--<button id="converter-button">Konvertera</button>-->
+        <!--<h3 id="convertPer"></h3>
+        <div id = "text"></div>
+        Need to download stuff -->
+        <iframe id="download_frame" style="display:none;"></iframe>
+        <h3 id="convertingText" style="display:none">Konverterar ...</h3>
+    </div>
+
+    <div id = "readerDiv" style="display:none">
+        <h1 tabindex=-1 id = "newPage"> Ny sida </h1>
+        <div id = "text"></div>
+        <br>
+        <button id = "nextPage">Nästa sida</button>
+        <br>
+        <button id = "previousPage">Föregående sida</button>
+        <br>
+        Gå till sida: <input id = "goToPage" type="text" placeHolder="1">
+        <br>
+        <button id = "backToConversion" style="background-color:red;color:white">
+            Tillbaka till konvertering
+        </button>
+    </div>
+
+    <script src="index.js" type="module"></script>
+
+</body>
+</html>
