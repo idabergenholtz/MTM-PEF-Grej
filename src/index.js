@@ -111,6 +111,7 @@ function displayCurrentPage(){
     htmlPageView.innerHTML = pageReader.getCurrentPage();
     let pageNumber = pageReader.getCurrentPageNbr();
     setPageNumber(pageNumber);
+    htmlNextPage.focus();
 }
 
 function formatPagePlaceHoler(pageNbr) {
@@ -120,7 +121,6 @@ function formatPagePlaceHoler(pageNbr) {
 function setPageNumber(pageNumber, saveInLocalStorage = false) {
     htmlPageInput.value = "";
     htmlPageInput.placeholder = formatPagePlaceHoler(pageNumber);
-    htmlNextPage.focus();
 
     if (saveInLocalStorage) {
         window.localStorage.setItem(fileName, "" + pageNumber);
