@@ -1,4 +1,4 @@
-import {alphabetTable, uppercaseSign, numbersTable, numberSign, punctuationTable, spaces} from "./swedishTables.js"
+import {alphabetTable, uppercaseSign, numbersTable, numberSign, spaces, doubleCharTable, singleCharTable} from "./swedishTables.js"
 
 //https://www.mtm.se/globalassets/punktskriftsnamnden/svenska_skrivregler_for_punktskrift.pdf
 
@@ -13,86 +13,91 @@ export function translateToSwedish(braille) {
             continue
         }
         //Check for lowercase letters
-        temp = lowercase(braille.charAt(i))
-        if(temp[0]) {
-            string+=alphabetTable[0][temp[1]]
+        temp = findInTable(currentChar, alphabetTable)
+
+        if(temp > -1) {
+            string += alphabetTable[0][temp]
             continue
         }
-        //Check for an uppercase sign
+        //Two character punctuation and special braille signs
+        if(i + 1 < braille.length) {
+            let nextChar = braille.charAt(i+1)
+            temp = findInTable(currentChar + nextChar, doubleCharTable)
+
+            if(temp > -1) {
+                string += doubleCharTable[0][temp]
+                i++
+                continue
+            }
+        }
+        //Single character punctuation and special braille signs
+        temp = findInTable(currentChar, singleCharTable)
+
+        if(temp > -1) {
+            string+=singleCharTable[0][temp]
+            continue
+        }
+
+        //Check for uppercase characters
         temp = uppercase(braille, i)
-        if(temp[0]) {
-            string += temp[1]
-            i+=temp[2]
+        if(temp.length > 0) {
+            string += temp
+            i+= temp.length
             continue
         }
-
-        //Check for a number sign
+   
+        //Check for number signs
         temp = number(braille, i)
-        if(temp[0]) {
-            string += temp[1]
-            i+=temp[2]
+        if(temp.length > 0) {
+            string += temp
+            i+=temp.length
             continue
         }
 
-        string += currentChar //Eller currentChar
+        string += currentChar //No suitable replacement found, add the braille char to the string
     }
     return string
 }
 
-function lowercase(currentChar) {
-    let index = alphabetTable[1].indexOf(currentChar)
-    if(index == -1) return [false]
-    return [true, index]
-}
-
 function uppercase(braille, index) {
-    if(braille.charAt(index) !== uppercaseSign) return [false] //Det ska inte vara en versal
+    if(braille.charAt(index) !== uppercaseSign) return "" //Not an upper case letter
     let count = 1
     let string = ""
 
-    //Endast första bokstaven i ordet ska vara en versal
+    //Only the first letter should be upper case
     if(braille.charAt(index+1) !== uppercaseSign) {
-        let temp = lowercase(braille.charAt(index+1))
-        if(temp[0]) string += alphabetTable[2][temp[1]]
-        
-        return [true,string,count]
+        let temp = findInTable(braille.charAt(index+1), alphabetTable)
+        if(temp > -1) string += alphabetTable[2][temp]
+        //return [true,string,count]
+        return string
     }
 
-    //Hela ordet, fram till nästa "icke-bokstav" ska vara versaler
+    //The whole word, until the next non alphabetic character, should be upper case
     for(let i = index+2; i < braille.length; i++) {
-        let temp = lowercase(braille.charAt(i))        
-        if(!temp[0]) break
+        let temp = findInTable(braille.charAt(i), alphabetTable)    
+        if(temp <= -1) break
         count++
-        string += alphabetTable[2][temp[1]]
+        string += alphabetTable[2][temp]
     }
-    return [true, string, count]
+    return string
 }
 
-//
 function number(braille, index) {
-    //Undersök sida 49 i pdf, ex: 100.000.000
-
-    if(braille.charAt(index) !== numberSign) return [false] 
+    if(braille.charAt(index) !== numberSign) return "" 
     let count = 0
     let string = ""
 
     for(let i = index+1; i < braille.length; i++) {
-        let temp = findNumber(braille.charAt(i))
-        if(!temp[0]) break
+        let temp = findInTable(braille.charAt(i), numbersTable)
+        if(temp <= -1) break
         count++
-        string += numbersTable[0][temp[1]]
+        string += numbersTable[0][temp]
     }
-    
-    return [true, string, count]
+    return string
 }
 
-//Find a number fron the numbersTable
-function findNumber(currentChar) {
-    let index = numbersTable[1].indexOf(currentChar)
-    if(index == -1) return [false]
-    return [true, index]
-}
+function findInTable(currentChars, table) {
+    let index = table[1].indexOf(currentChars)
 
-function punctuationMarks() {
-
+    return index;
 }
