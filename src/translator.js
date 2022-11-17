@@ -1,4 +1,4 @@
-import {alphabetTable, uppercaseSign, numbersTable, numberSign, punctuationTable, spaces} from "./swedishTables.js"
+import {alphabetTable, uppercaseSign, numbersTable, numberSign, spaces, doubleCharTable, singleCharTable} from "./swedishTables.js"
 
 //https://www.mtm.se/globalassets/punktskriftsnamnden/svenska_skrivregler_for_punktskrift.pdf
 
@@ -6,14 +6,32 @@ export function translateToSwedish(braille) {
     let string = ""
     let temp
     for(let i = 0; i < braille.length; i++){ 
+        console.log("skrrrrrr")
         //Check for a blank space
         let currentChar = braille.charAt(i)
         if(currentChar == spaces[0] || currentChar == spaces[1]) {
             string += " "
             continue
         }
+        //Check for punctuation, parentheses, currency signs, etc
+        if(i + 2 < braille.length) {
+            let nextChar = braille.charAt(i+1)
+            temp = doubleChars(currentChar, nextChar)
+
+            if(temp[0]) {
+                string+=doubleCharTable[0][temp[1]]
+                i++
+                continue
+            }
+        }
+        temp = singleChars(currentChar)
+        if(temp[0]) {
+            string+=singleCharTable[0][temp[1]]
+            continue
+        }
+
         //Check for lowercase letters
-        temp = lowercase(braille.charAt(i))
+        temp = lowercase(currentChar, alphabetTable)
         if(temp[0]) {
             string+=alphabetTable[0][temp[1]]
             continue
@@ -38,6 +56,19 @@ export function translateToSwedish(braille) {
     }
     return string
 }
+
+function doubleChars(currentChar, nextChar) {
+    let index = doubleCharTable[1].indexOf(currentChar + nextChar)
+    if(index == -1) return [false]
+    return [true, index]
+}
+
+function singleChars(currentChar) {
+    let index = singleCharTable[1].indexOf(currentChar)
+    if(index == -1) return [false]
+    return [true, index]
+}
+
 
 function lowercase(currentChar) {
     let index = alphabetTable[1].indexOf(currentChar)
@@ -93,6 +124,8 @@ function findNumber(currentChar) {
     return [true, index]
 }
 
-function punctuationMarks() {
-
+function findInTable(currentChar, table) {
+    let index = table[1].indexOf(currentChar)
+    if(index == -1) return [false]
+    return [true, index]
 }

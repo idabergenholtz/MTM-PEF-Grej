@@ -6,12 +6,7 @@ export let alphabetTable = [
 
 export let uppercaseSign = "⠠"
 
-export let spaces = ["⠀", " "]//OBSERVE, these are completely different in unicode. The first one is a braille space and the second one is a normal space
-
-export let punctuationTable = [
-    [], 
-    []
-]
+export let spaces = ["⠀", " "]//OBSERVE, these are completely different in unicode. The first character is a braille space and the second character is a normal space
 
 export let numberSign = '⠼'
 
@@ -19,4 +14,15 @@ export let numbersTable = [
     ["0","1","2","3","4","5","6","7","8","9"], 
     ["⠚","⠁","⠃","⠉","⠙","⠑","⠋","⠛","⠓","⠊"]
 ]
+
+export let singleCharTable = [
+    ["(",")","[","]","§","&","*","”","|",".",",","?","!",":", ";", "/", "\"", "\'"],
+    ["⠦","⠴","⠷","⠾","⠬","⠯","⠔","⠰","⠸","⠄","⠂","⠢","⠖","⠒","⠆","⠌","⠰","⠐"]
+]
+
+export let doubleCharTable = [
+    ["¢","$","€","£","¥","{","}","_","\\","@","#","†","~"],
+    ["⠘⠉","⠘⠎","⠘⠑","⠘⠇","⠘⠽","⠠⠷","⠠⠾","⠘⠤","⠘⠌","⠘⠷","⠘⠼","⠘⠲", "⠘⠒"]
+]
+
     
