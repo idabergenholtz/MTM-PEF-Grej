@@ -62,7 +62,6 @@ function selectFile() {
 
     let pefFile = htmlFileSelector.files[0];
 
-    /*
     if (!isPefFileType(pefFile.type)) {
         window.alert("Filen du försöker ladda är inte PEF-fil.");
         return;
@@ -72,7 +71,6 @@ function selectFile() {
     if (!shouldConvert){
         return;
     }
-    */
 
     fileName = pefFile.name;
     let fileRead = false;
