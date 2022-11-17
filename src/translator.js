@@ -6,17 +6,22 @@ export function translateToSwedish(braille) {
     let string = ""
     let temp
     for(let i = 0; i < braille.length; i++){ 
-        console.log("skrrrrrr")
         //Check for a blank space
         let currentChar = braille.charAt(i)
         if(currentChar == spaces[0] || currentChar == spaces[1]) {
             string += " "
             continue
         }
+        //Check for lowercase letters
+        temp = findInTable(currentChar, alphabetTable)
+        if(temp[0]) {
+            string+=alphabetTable[0][temp[1]]
+            continue
+        }
         //Check for punctuation, parentheses, currency signs, etc
-        if(i + 2 < braille.length) {
+        if(i + 1 < braille.length) {
             let nextChar = braille.charAt(i+1)
-            temp = doubleChars(currentChar, nextChar)
+            temp = findInTable(currentChar + nextChar, doubleCharTable)
 
             if(temp[0]) {
                 string+=doubleCharTable[0][temp[1]]
@@ -24,18 +29,12 @@ export function translateToSwedish(braille) {
                 continue
             }
         }
-        temp = singleChars(currentChar)
+        temp = findInTable(currentChar, singleCharTable)
         if(temp[0]) {
             string+=singleCharTable[0][temp[1]]
             continue
         }
 
-        //Check for lowercase letters
-        temp = lowercase(currentChar, alphabetTable)
-        if(temp[0]) {
-            string+=alphabetTable[0][temp[1]]
-            continue
-        }
         //Check for an uppercase sign
         temp = uppercase(braille, i)
         if(temp[0]) {
@@ -57,25 +56,6 @@ export function translateToSwedish(braille) {
     return string
 }
 
-function doubleChars(currentChar, nextChar) {
-    let index = doubleCharTable[1].indexOf(currentChar + nextChar)
-    if(index == -1) return [false]
-    return [true, index]
-}
-
-function singleChars(currentChar) {
-    let index = singleCharTable[1].indexOf(currentChar)
-    if(index == -1) return [false]
-    return [true, index]
-}
-
-
-function lowercase(currentChar) {
-    let index = alphabetTable[1].indexOf(currentChar)
-    if(index == -1) return [false]
-    return [true, index]
-}
-
 function uppercase(braille, index) {
     if(braille.charAt(index) !== uppercaseSign) return [false] //Det ska inte vara en versal
     let count = 1
@@ -83,7 +63,7 @@ function uppercase(braille, index) {
 
     //Endast första bokstaven i ordet ska vara en versal
     if(braille.charAt(index+1) !== uppercaseSign) {
-        let temp = lowercase(braille.charAt(index+1))
+        let temp = findInTable(braille.charAt(index+1), alphabetTable)
         if(temp[0]) string += alphabetTable[2][temp[1]]
         
         return [true,string,count]
@@ -91,7 +71,7 @@ function uppercase(braille, index) {
 
     //Hela ordet, fram till nästa "icke-bokstav" ska vara versaler
     for(let i = index+2; i < braille.length; i++) {
-        let temp = lowercase(braille.charAt(i))        
+        let temp = findInTable(braille.charAt(i), alphabetTable)    
         if(!temp[0]) break
         count++
         string += alphabetTable[2][temp[1]]
@@ -99,16 +79,14 @@ function uppercase(braille, index) {
     return [true, string, count]
 }
 
-//
 function number(braille, index) {
     //Undersök sida 49 i pdf, ex: 100.000.000
-
     if(braille.charAt(index) !== numberSign) return [false] 
     let count = 0
     let string = ""
 
     for(let i = index+1; i < braille.length; i++) {
-        let temp = findNumber(braille.charAt(i))
+        let temp = findInTable(braille.charAt(i), numbersTable)
         if(!temp[0]) break
         count++
         string += numbersTable[0][temp[1]]
@@ -117,15 +95,8 @@ function number(braille, index) {
     return [true, string, count]
 }
 
-//Find a number fron the numbersTable
-function findNumber(currentChar) {
-    let index = numbersTable[1].indexOf(currentChar)
-    if(index == -1) return [false]
-    return [true, index]
-}
-
-function findInTable(currentChar, table) {
-    let index = table[1].indexOf(currentChar)
+function findInTable(currentChars, table) {
+    let index = table[1].indexOf(currentChars)
     if(index == -1) return [false]
     return [true, index]
 }
