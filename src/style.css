@@ -1,0 +1,28 @@
+:root {
+    --main-colour: rgb(116, 0, 170);
+    --main-colour-hover:rgb(77, 0, 112);
+
+    --default-spacing: 12px;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    font-size: 22px;
+}
+
+button{
+    padding: var(--default-spacing) calc(var(--default-spacing) * 2);
+    line-height: var(--default-spacing);
+    cursor: pointer;
+    background-color: var(--main-colour);
+    color: white;
+    border-radius: 0.4rem;
+    border:none;
+    margin: 5px
+}
+
+button:hover {
+    background-color: var(--main-colour-hover);
+}

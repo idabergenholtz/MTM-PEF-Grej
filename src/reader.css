@@ -1,0 +1,12 @@
+h1 {
+    background-color: var(--main-colour);
+    margin: 0;
+    color: white;
+    line-height: calc(var(--default-spacing) * 8);
+    height: calc(var(--default-spacing) * 8);
+}
+
+#backToConversion {
+    background-color: var(--main-colour);
+    color: white;
+}
