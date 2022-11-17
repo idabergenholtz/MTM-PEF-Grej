@@ -19,7 +19,7 @@ export function translateToSwedish(braille) {
             string += alphabetTable[0][temp]
             continue
         }
-        //skiljetecken och specialtecken som i punktskrift består av två tecken
+        //Two character punctuation and special braille signs
         if(i + 1 < braille.length) {
             let nextChar = braille.charAt(i+1)
             temp = findInTable(currentChar + nextChar, doubleCharTable)
@@ -30,7 +30,7 @@ export function translateToSwedish(braille) {
                 continue
             }
         }
-        //skiljetecken och specialtecken som i punktskrift består av ett tecken
+        //Single character punctuation and special braille signs
         temp = findInTable(currentChar, singleCharTable)
 
         if(temp > -1) {
@@ -60,11 +60,11 @@ export function translateToSwedish(braille) {
 }
 
 function uppercase(braille, index) {
-    if(braille.charAt(index) !== uppercaseSign) return "" //Det ska inte vara en versal
+    if(braille.charAt(index) !== uppercaseSign) return "" //Not an upper case letter
     let count = 1
     let string = ""
 
-    //Endast första bokstaven i ordet ska vara en versal
+    //Only the first letter should be upper case
     if(braille.charAt(index+1) !== uppercaseSign) {
         let temp = findInTable(braille.charAt(index+1), alphabetTable)
         if(temp > -1) string += alphabetTable[2][temp]
@@ -72,7 +72,7 @@ function uppercase(braille, index) {
         return string
     }
 
-    //Hela ordet, fram till nästa "icke-bokstav" ska vara versaler
+    //The whole word, until the next non alphabetic character, should be upper case
     for(let i = index+2; i < braille.length; i++) {
         let temp = findInTable(braille.charAt(i), alphabetTable)    
         if(temp <= -1) break
