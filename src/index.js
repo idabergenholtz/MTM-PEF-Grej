@@ -32,7 +32,7 @@ htmlBackToConversion.addEventListener("click", goBackToConversion);
 htmlNextPage.addEventListener("click", nextPage);
 htmlPreviousPage.addEventListener("click", previousPage);
 htmlPageInput.addEventListener("input", changeCurrentPage);
-htmlPageInput.addEventListener("blur", displayCurrentPage);
+htmlPageInput.addEventListener("blur", pageChangeFinished);
 
 
 // -- Helper functions -- //
@@ -106,11 +106,14 @@ function downloadFile(filename, text) {
     document.body.removeChild(downloadDummyElement);
 }
 
-function displayCurrentPage(){
+function displayCurrentPage(focusNewPage = true){
     htmlPageView.innerHTML = pageReader.getCurrentPage();
     let pageNumber = pageReader.getCurrentPageNbr();
     setPageNumber(pageNumber, true);
-    htmlNewPage.focus();
+    if (focusNewPage){
+        htmlNewPage.focus();
+    }
+    
 }
 
 function formatPagePlaceHoler(pageNbr) {
@@ -157,4 +160,13 @@ function changeCurrentPage() {
     }
     pageReader.setCurrentPage(newPage);
     htmlPageView.innerHTML = pageReader.getCurrentPage();
+}
+
+function pageChangeFinished() {
+    if (htmlPageInput.value === ""){
+        displayCurrentPage(false);
+    }
+    else{
+        displayCurrentPage();
+    }
 }
