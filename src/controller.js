@@ -2,6 +2,7 @@ import { Outputter } from './outputter.js';
 import { receiveFile } from './Parser.js';
 import { translateToSwedish } from './translator.js';
 import { PageReader } from './page_reader.js';
+import { frontPage} from './removeFrontPage.js';
 
 
 class Controller {
@@ -62,6 +63,9 @@ class Controller {
         //document.getElementById('convertPer').textContent =
         //                    "Konvertering " + 100 + "% färdig.";
         console.log('Done translating braille to clear text');
+
+        //Removing front page, can be extended to include more changes to the translated pefObject.
+        pefTree = frontPage(pefTree);
 
         let outputFileFormat = this.getOutputFileFormat();
         console.log(`Using output format: ${outputFileFormat}`);
