@@ -19,7 +19,7 @@ const htmlFileSelector = document.getElementById('file-selector');
 
 const htmlBackToConversion = document.getElementById('backToConversion');
 const htmlNextPage = document.getElementById('nextPage');
-const htmlNewPage = document.getElementById('newPage');
+//const htmlNewPage = document.getElementById('newPage');
 const htmlPreviousPage = document.getElementById('previousPage');
 
 const htmlChosenFile = document.getElementById("chosenFile");
@@ -111,7 +111,10 @@ function displayCurrentPage(focusNewPage = true){
     let pageNumber = pageReader.getCurrentPageNbr();
     setPageNumber(pageNumber, true);
     if (focusNewPage){
-        htmlNewPage.focus();
+        //We need to use document.getElementById directly here
+        //since the h1 tag changes every time
+        //So a global const won't work        
+        document.getElementById('newPage').focus();
     }
     
 }

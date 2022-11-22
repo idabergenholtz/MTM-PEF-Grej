@@ -52,7 +52,7 @@ function PageReader (){
         },
         addPage : function(page, outputFormatter) {
 
-            let newPage = ""
+            let newPage = ''
             newPage += outputFormatter.formatPageStart();
             let pageRows = page.rows.entries();
             let pageNbr = -1;
@@ -62,14 +62,25 @@ function PageReader (){
                     pageNbr = parseInt(str);
                     pageNbr = !isNaN(pageNbr) ? pageNbr : -1;
                 }
-                newPage += outputFormatter.formatRowStart();
-                newPage += row;//Ändrade från row.text till endast row / Daniel
-                newPage += outputFormatter.formatRowEnd();
+                // page number row will not be added to normal page text
+                // special page numbers like roman numerals will be added however
+                // as well as first rows not containing page numbers
+                if (row_i !== 0 || pageNbr < 0) {
+                    newPage += outputFormatter.formatRowStart();
+                    newPage += row;
+                    newPage += outputFormatter.formatRowEnd();
+                }
             }
             newPage += outputFormatter.formatPageEnd();
-
             this.maxPageNbr +=  pageNbr > 0 ? 1 : 0;
-            const fullPage = {text: newPage, pageNbr: this.maxPageNbr};
+            // create pagenumber h1
+            let shouldDisplay = pageNbr > 0  || this.pages.length === 0; 
+            let nbrDisplay = shouldDisplay ? '' + this.maxPageNbr : this.maxPageNbr + ' (forts.)';
+            let firstLine = '<h1 tabindex=0 id = "newPage"> Sidan ' + nbrDisplay + '</h1>';
+            // append to start of new page
+            let newPageFinal = firstLine + newPage;
+            //add to array
+            const fullPage = {text: firstLine + newPage, pageNbr: this.maxPageNbr};
             this.pages.push(fullPage);
 
         },

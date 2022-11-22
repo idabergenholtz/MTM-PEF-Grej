@@ -37,11 +37,11 @@ class OutputFormatter {
 
 class OutputFormatterHtml extends OutputFormatter {
     // First page
-    static formatFirstPageTitleStart()  { return '<h2 class="first-page-title">'; }
+    static formatFirstPageTitleStart()  { return '<h1 tabindex=0 id="newPage" class="first-page-title">'; }
     static formatFirstPageAuthorStart() { return '<h4 class="first-page-author">'; }
     static formatFirstPageDateStart()   { return '<h6 class="first-page-date">'; }
 
-    static formatFirstPageTitleEnd()  { return '</h2>'; }
+    static formatFirstPageTitleEnd()  { return '</h1>'; }
     static formatFirstPageAuthorEnd() { return '</h4>'; }
     static formatFirstPageDateEnd()   { return '</h6>'; }
 
