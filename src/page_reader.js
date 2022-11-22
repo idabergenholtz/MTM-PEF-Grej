@@ -77,8 +77,6 @@ function PageReader (){
             let shouldDisplay = pageNbr > 0  || this.pages.length === 0; 
             let nbrDisplay = shouldDisplay ? '' + this.maxPageNbr : this.maxPageNbr + ' (forts.)';
             let firstLine = '<h1 tabindex=0 id = "newPage"> Sidan ' + nbrDisplay + '</h1>';
-            // append to start of new page
-            let newPageFinal = firstLine + newPage;
             //add to array
             const fullPage = {text: firstLine + newPage, pageNbr: this.maxPageNbr};
             this.pages.push(fullPage);
