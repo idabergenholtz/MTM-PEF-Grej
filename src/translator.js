@@ -42,7 +42,8 @@ export function translateToSwedish(braille) {
         temp = uppercase(braille, i)
         if(temp.length > 0) {
             string += temp
-            i+= temp.length
+            i++
+            if(temp.length > 1) i += temp.length
             continue
         }
    
@@ -61,7 +62,6 @@ export function translateToSwedish(braille) {
 
 function uppercase(braille, index) {
     if(braille.charAt(index) !== uppercaseSign) return "" //Not an upper case letter
-    let count = 1
     let string = ""
 
     //Only the first letter should be upper case
@@ -73,10 +73,9 @@ function uppercase(braille, index) {
     }
 
     //The whole word, until the next non alphabetic character, should be upper case
-    for(let i = index+2; i < braille.length; i++) {
+    for(let i = index + 2; i < braille.length; i++) {
         let temp = findInTable(braille.charAt(i), alphabetTable)    
         if(temp <= -1) break
-        count++
         string += alphabetTable[2][temp]
     }
     return string
