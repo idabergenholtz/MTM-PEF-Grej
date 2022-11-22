@@ -16,13 +16,17 @@ export function frontPage(pefObject){
  * removes the frontPage if it exists
  */
 function removeFrontPage(){
-    let tempRowsArray = unfPefObject.body.volumes[0].sections[0].pages[0].rows;
-    let counter = 0;
-    tempRowsArray.forEach((e) => {
+    for(let i = 0; i<unfPefObject.body.volumes.length ; i++){
+        console.log(unfPefObject.body.volumes.length)
+        let tempRowsArray = unfPefObject.body.volumes[i].sections[0].pages[0].rows;
+        let counter = 0;
+        tempRowsArray.forEach((e) => {
         if(testExp.test(e) || testExp2.test(e)){
             counter++;
         } 
     });
-    if(counter > 10) unfPefObject.body.volumes[0].sections[0].pages.shift();
+    if(counter > 10) unfPefObject.body.volumes[i].sections[0].pages.shift();
+    }
+    
 
 }
