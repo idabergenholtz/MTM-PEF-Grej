@@ -13,13 +13,15 @@ class OutputFormatter {
     */
 
     // --- First page ---/
-    static formatFirstPageTitleStart()  { throw new Error("Not implemented!"); }
-    static formatFirstPageAuthorStart() { throw new Error("Not implemented!"); }
-    static formatFirstPageDateStart()   { throw new Error("Not implemented!"); }
+    static formatFirstPageTitleStart()         { throw new Error("Not implemented!"); }
+    static formatFirstPageAuthorStart()        { throw new Error("Not implemented!"); }
+    static formatFirstPageDateStart()          { throw new Error("Not implemented!"); }
+    static formatFirstPageOtherMetaDataStart() { throw new Error("Not implemented!"); }
 
-    static formatFirstPageTitleEnd()  { throw new Error("Not implemented!"); }
-    static formatFirstPageAuthorEnd() { throw new Error("Not implemented!"); }
-    static formatFirstPageDateEnd()   { throw new Error("Not implemented!"); }
+    static formatFirstPageTitleEnd()           { throw new Error("Not implemented!"); }
+    static formatFirstPageAuthorEnd()          { throw new Error("Not implemented!"); }
+    static formatFirstPageDateEnd()            { throw new Error("Not implemented!"); }
+    static formatFirstPageOtherMetaDataEnd()   { throw new Error("Not implemented!"); }
 
     // --- Normal content ---/
     static formatBodyStart()            { throw new Error("Not implemented!"); }
@@ -37,13 +39,19 @@ class OutputFormatter {
 
 class OutputFormatterHtml extends OutputFormatter {
     // First page
-    static formatFirstPageTitleStart()  { return '<h2 class="first-page-title">'; }
-    static formatFirstPageAuthorStart() { return '<h4 class="first-page-author">'; }
-    static formatFirstPageDateStart()   { return '<h6 class="first-page-date">'; }
+    static formatFirstPageTitleStart()    { return '<h2 class="first-page-title">'; }
+    static formatFirstPageAuthorStart()   { return '<h4 class="first-page-author">'; }
+    static formatFirstPageDateStart()     { return '<h6 class="first-page-date">'; }
+    static firstPageMetaDataTableStart()  { return '<table>'; }
+    static formatFirstPageMetaKeyStart()  { return '<tr><td>'; }
+    static formatFirstPageMetaValueStart(){ return '<td>'; }
 
-    static formatFirstPageTitleEnd()  { return '</h2>'; }
-    static formatFirstPageAuthorEnd() { return '</h4>'; }
-    static formatFirstPageDateEnd()   { return '</h6>'; }
+    static formatFirstPageTitleEnd()      { return '</h2>'; }
+    static formatFirstPageAuthorEnd()     { return '</h4>'; }
+    static formatFirstPageDateEnd()       { return '</h6>'; }
+    static firstPageMetaDataTableEnd()    { return '</table>'; }
+    static formatFirstPageMetaKeyEnd()    { return '</td>'; }
+    static formatFirstPageMetaValueEnd()  { return '</td></tr>'; }
 
     // Normal content
     static formatBodyStart()    { return '<div class="body">'; }
@@ -119,18 +127,56 @@ class Outputter {
         let outputFormatter = Outputter.getOutputFormatter(outputFormat);
 
         let output = '';
+        let otherMetaData = new Map();
 
-        output += outputFormatter.formatFirstPageTitleStart() +
-                  metaData.title +
-                  outputFormatter.formatFirstPageTitleEnd();
+        for (const [key, value] of Object.entries(metaData)) {
+            switch (key) {
+                case 'title':
+                    output += outputFormatter.formatFirstPageTitleStart() +
+                              value +
+                              outputFormatter.formatFirstPageTitleEnd();
+                break;
+                case 'creator':
+                    output += outputFormatter.formatFirstPageAuthorStart() +
+                              value +
+                              outputFormatter.formatFirstPageAuthorEnd();
+                    break;
+                case 'date':
+                    output += outputFormatter.formatFirstPageDateStart() +
+                              value +
+                              outputFormatter.formatFirstPageDateEnd();
+                    break;
+                default:
+                    // If the value for the given meta data exists, we'll save it
+                    // for now so we can add it to the front page so it comes after title/creator/date.
+                    if (value) {
+                        otherMetaData.set(key, value);
+                    }
+                    break;
+            }
+        }
 
-        output += outputFormatter.formatFirstPageAuthorStart() +
-                  metaData.creator +
-                  outputFormatter.formatFirstPageAuthorEnd();
+        let addedMetadataTable = false;
 
-        output += outputFormatter.formatFirstPageDateStart() +
-                  metaData.date +
-                  outputFormatter.formatFirstPageDateEnd();
+        for (const [key, value] of otherMetaData.entries()) {
+            if (!addedMetadataTable) {
+                // Let's append a metadata table
+                output += outputFormatter.firstPageMetaDataTableStart();
+                addedMetadataTable = true;
+            }
+
+            output += outputFormatter.formatFirstPageMetaKeyStart() +
+                      key +
+                      outputFormatter.formatFirstPageMetaKeyEnd() +
+                      outputFormatter.formatFirstPageMetaValueStart() +
+                      value +
+                      outputFormatter.formatFirstPageMetaValueEnd();
+        }
+
+        if (addedMetadataTable) {
+            output += outputFormatter.firstPageMetaDataTableEnd();
+        }
+
 
         return output;
     }
