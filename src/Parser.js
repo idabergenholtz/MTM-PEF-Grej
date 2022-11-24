@@ -157,7 +157,6 @@ function createRows(content){
         if(startIndex +5  < endIndex){//to handle <row /> and <row/> tags
 
             let rowContent = content.substring(startIndex + 5, endIndex)
-            //console.log(rowContent.length)
             rowsArray.push(rowContent)
         } else{
             rowsArray.push("")
