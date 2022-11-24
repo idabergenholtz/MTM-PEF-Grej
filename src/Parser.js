@@ -113,7 +113,7 @@ function createSections(content){
         let endIndex = findEndTag(content, "section")
 
         let temp = createPages(content.substring(startIndex, endIndex)) //calls createPages with the substring from <section> to </section> as parameter
-        sectionsArray.push(temp)    //adds the Section object containing an array of pages to the sectionsArray
+        if(temp.pages.length > 0)sectionsArray.push(temp)    //adds the Section object containing an array of pages to the sectionsArray
         content = content.substring(endIndex + 1, content.length);
     }
 
@@ -127,8 +127,8 @@ function createPages(content){
         let endIndex = findEndTag(content, "page")
         try{//Måste kanske titta efter första </tag efter startIndex, i butterfly.pef finns det flera </row> innan första <row>, try - catch för att hantera invalid string length
 
-
             let temp = createRows(content.substring(startIndex, endIndex))  //calls createRows with the substring from <page> to </page> as parameter
+
             if(temp.rows.length > 0) pagesArray.push(temp)   //adds the Page object containing an array of Strings to the pagesArray
 
         } catch(error){ //Ni kan bortse från denna try - catch för nu, verkar ha löst problemet iaf för de exempel vi har tillgång till just nu
@@ -145,32 +145,28 @@ function createPages(content){
 }
 
 function createRows(content){
-/*Styckesuppdelning med <row/>??? Ändrade i while-loopen och i let startIndex så att vi letar efter <row> istället för <row och row> istället för bara row
-Vi kanske vill ha ett sätt att hitta <row/> för styckesuppdelning
-*/
-
     let rowsArray = []
     //let texten = ''
     while(content.indexOf("<row>") != -1){
        
             let startIndex = findTag(content, "row")
         //let endIndex = startIndex + findEndTag(content.substring(startIndex, content.length), "row")    
-        //Ovantstående rad beräknar endIndex för första förkomst av </row> efter vårt startIndex, detta behöver kanske göras för alla taggar, men i våra exempel är det bara för row det var ett problem
-        let endIndex = startIndex + findEndTagRow(content.substring(startIndex, content.length), "/") 
-        //texten += " " + content.substring(startIndex, endIndex) Om vi inte vill ha varje row som ett separat element i en array kan vi göra en stäng för varje page
         
-        if(startIndex +5  < endIndex){
+        let endIndex = startIndex + findEndTagRow(content.substring(startIndex, content.length), "/") 
+        //Ovantstående rad beräknar endIndex för första förkomst av </row> efter vårt startIndex, detta behöver kanske göras för alla taggar, men i våra exempel är det bara för row det var ett problem
+        if(startIndex +5  < endIndex){//to handle <row /> and <row/> tags
 
             let rowContent = content.substring(startIndex + 5, endIndex)
+            //console.log(rowContent.length)
             rowsArray.push(rowContent)
         } else{
             rowsArray.push("")
         }
-            
-        
         content = content.substring(endIndex + 1, content.length)
         
     }
+
+    if(isPageEmpty(rowsArray)) return new Page([])
     return new Page(rowsArray)
 }
 
@@ -186,22 +182,10 @@ function findEndTag(content, tag){
 function findEndTagRow(content, tag){
     return content.indexOf(tag)-1
 }
-
-
-/**
- * Bara för att enkelt testa på liveserver
- */
-function readFile(){
-    let fil = document.getElementById("pefDoc").files[0];
-    let text = "";
-    let reader = new FileReader();
-    
-    reader.addEventListener("loadend", () => {//Vänta på att filen lästs in
-        //document.getElementById("demo").innerHTML = reader.result;//Skriv resultatet på websidan
-        document.getElementById("demo").innerHTML = "Filen har lästs in"
-        text = reader.result;
-        startParser(text);
-        
-    });
-    reader.readAsText(fil);//Läser filen
+/* Checks if a page contains anything other than blankspaces, a braille blankspace is different from a normal blankspace. Braille: '⠀', Normal: ' '*/
+function isPageEmpty(rowsArray){
+    for(let i = 0;i<rowsArray.length;i++){
+        if(!(!rowsArray[i].replaceAll('⠀', ' ').trim())) return false;
+    }
+    return true;
 }
