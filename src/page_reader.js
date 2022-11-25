@@ -3,15 +3,29 @@ function PageReader (){
         pages : [],
         currentPageNbr : 0,
         maxPageNbr : 0,
+        title : "",
+        addTitle : function(title) {
+            this.title = title;
+        },
         pageForward : function() {
             if (this.currentPageNbr < this.pages.length-1) {
                 this.currentPageNbr++;
+                return true;
+            }
+            else{
+                alert("Det finns inga fler sidor i boken.");
+                return false;
             }
 
         },
         pageBackward : function() {
             if (this.currentPageNbr > 0){
                 this.currentPageNbr--;
+                return true;
+            }
+            else{
+                alert("Du kan inte gå längre bakåt i den här boken.");
+                return false;
             }
 
         },
@@ -23,6 +37,7 @@ function PageReader (){
         },
         setCurrentPage : function(pageNbr) {
             if (pageNbr > this.maxPageNbr || pageNbr < 0){
+                alert("Sidnumret du försöker ange finns inte i den här boken.")
                 return;
             }
             let index = pageNbr;
@@ -76,7 +91,15 @@ function PageReader (){
             // create pagenumber h1
             let shouldDisplay = pageNbr > 0  || this.pages.length === 0; 
             let nbrDisplay = shouldDisplay ? '' + this.maxPageNbr : this.maxPageNbr + ' (forts.)';
-            let firstLine = '<h1 tabindex=0 id = "newPage"> Sidan ' + nbrDisplay + '</h1>';
+            let firstLine = '';
+            
+            if (this.maxPageNbr === 0){
+                firstLine += '<h1 tabindex=0 id = "newPage"> Inledande sidor (' 
+                            + (this.pages.length + 1) + ')</h1>';
+            }
+            else{
+                firstLine += '<h1 tabindex=0 id = "newPage"> Sidan ' + nbrDisplay + '</h1>';
+            }
             //add to array
             const fullPage = {text: firstLine + newPage, pageNbr: this.maxPageNbr};
             this.pages.push(fullPage);

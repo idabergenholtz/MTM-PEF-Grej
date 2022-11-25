@@ -90,6 +90,7 @@ class Controller {
         //document.getElementById('text').innerHTML = html;
 
         this.pageReader.addFirstPage(firstPage);
+        this.pageReader.addTitle(metaData.title);
         this.pageReader.recalibrate();
 
         //look if in local storage

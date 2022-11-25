@@ -33,6 +33,11 @@ htmlNextPage.addEventListener("click", nextPage);
 htmlPreviousPage.addEventListener("click", previousPage);
 htmlPageInput.addEventListener("input", changeCurrentPage);
 htmlPageInput.addEventListener("blur", pageChangeFinished);
+htmlPageInput.addEventListener("keydown", (e) => {
+    if (e.key == 'Enter'){
+        htmlPageInput.blur();
+    }
+} );
 
 
 // -- Helper functions -- //
@@ -67,7 +72,7 @@ function selectFile() {
         return;
     }
 
-    let shouldConvert = window.confirm("Vill du konvertera " + pefFile.name + "?")
+    let shouldConvert = window.confirm("Vill du läsa " + pefFile.name + "?")
     if (!shouldConvert){
         return;
     }
@@ -110,6 +115,11 @@ function displayCurrentPage(focusNewPage = true){
     htmlPageView.innerHTML = pageReader.getCurrentPage();
     let pageNumber = pageReader.getCurrentPageNbr();
     setPageNumber(pageNumber, true);
+    document.title = "";
+    if (pageNumber !== 0){
+        document.title = "Sidan " + pageNumber + " - ";
+    }
+    document.title += pageReader.title;
     if (focusNewPage){
         //We need to use document.getElementById directly here
         //since the h1 tag changes every time
@@ -133,6 +143,7 @@ function setPageNumber(pageNumber, saveInLocalStorage = false) {
 }
 
 function goBackToConversion() {
+    document.title = "Läs punktskrift direkt";
     htmlConvertingText.style = "display:none";
     htmlChosenFile.innerHTML = "- ingen fil vald";
     toggleDiv(true);
@@ -147,13 +158,17 @@ function goBackToConversion() {
 };
 
 function nextPage() {
-    pageReader.pageForward();
-    displayCurrentPage();
+    if (pageReader.pageForward()){
+        displayCurrentPage();
+    }
+    
 }
 
 function previousPage() {
-    pageReader.pageBackward();
-    displayCurrentPage();
+    if (pageReader.pageBackward()){
+        displayCurrentPage();
+    }
+    
 }
 
 function changeCurrentPage() {
@@ -167,7 +182,7 @@ function changeCurrentPage() {
 
 function pageChangeFinished() {
     if (htmlPageInput.value === ""){
-        displayCurrentPage(false);
+        displayCurrentPage(false, false, true);
     }
     else{
         displayCurrentPage();
