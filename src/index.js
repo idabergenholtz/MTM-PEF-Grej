@@ -115,11 +115,7 @@ function displayCurrentPage(focusNewPage = true){
     htmlPageView.innerHTML = pageReader.getCurrentPage();
     let pageNumber = pageReader.getCurrentPageNbr();
     setPageNumber(pageNumber, true);
-    document.title = "";
-    if (pageNumber !== 0){
-        document.title = "Sidan " + pageNumber + " - ";
-    }
-    document.title += pageReader.title;
+    document.title = document.getElementById('newPage').innerText + " - " + pageReader.title;
     if (focusNewPage){
         //We need to use document.getElementById directly here
         //since the h1 tag changes every time
