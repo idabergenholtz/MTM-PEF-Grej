@@ -179,7 +179,7 @@ function changeCurrentPage() {
 
 function pageChangeFinished() {
     if (htmlPageInput.value === ""){
-        displayCurrentPage(false, false, true);
+        displayCurrentPage(false);
     }
     else{
         displayCurrentPage();
