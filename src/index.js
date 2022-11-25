@@ -115,12 +115,13 @@ function displayCurrentPage(focusNewPage = true){
     htmlPageView.innerHTML = pageReader.getCurrentPage();
     let pageNumber = pageReader.getCurrentPageNbr();
     setPageNumber(pageNumber, true);
-    document.title = document.getElementById('newPage').innerText + " - " + pageReader.title;
+    const h1 = document.getElementById('newPage');
+    document.title = h1.innerText + " - " + pageReader.title;
     if (focusNewPage){
         //We need to use document.getElementById directly here
         //since the h1 tag changes every time
         //So a global const won't work        
-        document.getElementById('newPage').focus();
+        h1.focus();
     }
     
 }
