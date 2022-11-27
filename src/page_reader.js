@@ -3,15 +3,29 @@ function PageReader (){
         pages : [],
         currentPageNbr : 0,
         maxPageNbr : 0,
+        title : "",
+        addTitle : function(title) {
+            this.title = title;
+        },
         pageForward : function() {
             if (this.currentPageNbr < this.pages.length-1) {
                 this.currentPageNbr++;
+                return true;
+            }
+            else{
+                alert("Det finns inga fler sidor i boken.");
+                return false;
             }
 
         },
         pageBackward : function() {
             if (this.currentPageNbr > 0){
                 this.currentPageNbr--;
+                return true;
+            }
+            else{
+                alert("Du kan inte gå längre bakåt i den här boken.");
+                return false;
             }
 
         },
@@ -23,6 +37,7 @@ function PageReader (){
         },
         setCurrentPage : function(pageNbr) {
             if (pageNbr > this.maxPageNbr || pageNbr < 0){
+                alert("Sidnumret du försöker ange finns inte i den här boken.")
                 return;
             }
             let index = pageNbr;
@@ -52,7 +67,7 @@ function PageReader (){
         },
         addPage : function(page, outputFormatter) {
 
-            let newPage = ""
+            let newPage = ''
             newPage += outputFormatter.formatPageStart();
             let pageRows = page.rows.entries();
             let pageNbr = -1;
@@ -62,14 +77,31 @@ function PageReader (){
                     pageNbr = parseInt(str);
                     pageNbr = !isNaN(pageNbr) ? pageNbr : -1;
                 }
-                newPage += outputFormatter.formatRowStart();
-                newPage += row;//Ändrade från row.text till endast row / Daniel
-                newPage += outputFormatter.formatRowEnd();
+                // page number row will not be added to normal page text
+                // special page numbers like roman numerals will be added however
+                // as well as first rows not containing page numbers
+                if (row_i !== 0 || pageNbr < 0) {
+                    newPage += outputFormatter.formatRowStart();
+                    newPage += row;
+                    newPage += outputFormatter.formatRowEnd();
+                }
             }
             newPage += outputFormatter.formatPageEnd();
-
             this.maxPageNbr +=  pageNbr > 0 ? 1 : 0;
-            const fullPage = {text: newPage, pageNbr: this.maxPageNbr};
+            // create pagenumber h1
+            let shouldDisplay = pageNbr > 0  || this.pages.length === 0; 
+            let nbrDisplay = shouldDisplay ? '' + this.maxPageNbr : this.maxPageNbr + ' (forts.)';
+            let firstLine = '';
+            
+            if (this.maxPageNbr === 0){
+                firstLine += '<h1 tabindex=0 id = "newPage"> Inledande sidor (' 
+                            + (this.pages.length + 1) + ')</h1>';
+            }
+            else{
+                firstLine += '<h1 tabindex=0 id = "newPage"> Sidan ' + nbrDisplay + '</h1>';
+            }
+            //add to array
+            const fullPage = {text: firstLine + newPage, pageNbr: this.maxPageNbr};
             this.pages.push(fullPage);
 
         },

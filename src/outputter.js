@@ -39,9 +39,9 @@ class OutputFormatter {
 
 class OutputFormatterHtml extends OutputFormatter {
     // First page
-    static formatFirstPageTitleStart()    { return '<h2 class="first-page-title">'; }
-    static formatFirstPageAuthorStart()   { return '<h4 class="first-page-author">'; }
-    static formatFirstPageDateStart()     { return '<h6 class="first-page-date">'; }
+    static formatFirstPageTitleStart()  { return '<h1 tabindex=0 id="newPage" class="first-page-title">'; }
+    static formatFirstPageAuthorStart() { return '<h4 class="first-page-author">'; }
+    static formatFirstPageDateStart()   { return '<h6 class="first-page-date">'; }
     static firstPageMetaDataTableStart()  { return '<table>'; }
     static formatFirstPageMetaKeyStart()  { return '<tr><td>'; }
     static formatFirstPageMetaValueStart(){ return '<td>'; }

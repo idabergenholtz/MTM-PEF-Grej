@@ -1,4 +1,4 @@
-import {alphabetTable, uppercaseSign, numbersTable, numberSign, spaces, doubleCharTable, singleCharTable} from "./swedishTables.js"
+import {alphabetTable, uppercaseSign, numbersTable, numberSign, spaces, doubleCharTable, singleCharTable, oneCharIgnoreTable, twoCharIgnoreTable} from "./swedishTables.js"
 
 //https://www.mtm.se/globalassets/punktskriftsnamnden/svenska_skrivregler_for_punktskrift.pdf
 
@@ -13,16 +13,33 @@ export function translateToSwedish(braille) {
             continue
         }
         //Check for lowercase letters
-        temp = findInTable(currentChar, alphabetTable)
+        temp = findInTable(currentChar, alphabetTable[1])
 
         if(temp > -1) {
             string += alphabetTable[0][temp]
             continue
         }
-        //Two character punctuation and special braille signs
+        
+        //Ignore some characters, such as cursive indicators
+        temp = findInTable(currentChar, oneCharIgnoreTable)
+        if(temp > -1) {
+            string += currentChar
+            continue
+        }
+
         if(i + 1 < braille.length) {
+            //Check for characters to ignore
             let nextChar = braille.charAt(i+1)
-            temp = findInTable(currentChar + nextChar, doubleCharTable)
+
+            temp = findInTable(currentChar + nextChar, twoCharIgnoreTable)
+            if(temp > -1) {
+                string += currentChar + nextChar
+                i++
+                continue
+            }
+
+            //Two character punctuation and special braille signs
+            temp = findInTable(currentChar + nextChar, doubleCharTable[1])
 
             if(temp > -1) {
                 string += doubleCharTable[0][temp]
@@ -31,7 +48,7 @@ export function translateToSwedish(braille) {
             }
         }
         //Single character punctuation and special braille signs
-        temp = findInTable(currentChar, singleCharTable)
+        temp = findInTable(currentChar, singleCharTable[1])
 
         if(temp > -1) {
             string+=singleCharTable[0][temp]
@@ -42,7 +59,8 @@ export function translateToSwedish(braille) {
         temp = uppercase(braille, i)
         if(temp.length > 0) {
             string += temp
-            i+= temp.length
+            i++
+            if(temp.length > 1) i += temp.length
             continue
         }
    
@@ -61,22 +79,20 @@ export function translateToSwedish(braille) {
 
 function uppercase(braille, index) {
     if(braille.charAt(index) !== uppercaseSign) return "" //Not an upper case letter
-    let count = 1
     let string = ""
 
     //Only the first letter should be upper case
     if(braille.charAt(index+1) !== uppercaseSign) {
-        let temp = findInTable(braille.charAt(index+1), alphabetTable)
+        let temp = findInTable(braille.charAt(index+1), alphabetTable[1])
         if(temp > -1) string += alphabetTable[2][temp]
         //return [true,string,count]
         return string
     }
 
     //The whole word, until the next non alphabetic character, should be upper case
-    for(let i = index+2; i < braille.length; i++) {
-        let temp = findInTable(braille.charAt(i), alphabetTable)    
+    for(let i = index + 2; i < braille.length; i++) {
+        let temp = findInTable(braille.charAt(i), alphabetTable[1])    
         if(temp <= -1) break
-        count++
         string += alphabetTable[2][temp]
     }
     return string
@@ -88,7 +104,7 @@ function number(braille, index) {
     let string = ""
 
     for(let i = index+1; i < braille.length; i++) {
-        let temp = findInTable(braille.charAt(i), numbersTable)
+        let temp = findInTable(braille.charAt(i), numbersTable[1])
         if(temp <= -1) break
         count++
         string += numbersTable[0][temp]
@@ -97,7 +113,7 @@ function number(braille, index) {
 }
 
 function findInTable(currentChars, table) {
-    let index = table[1].indexOf(currentChars)
+    let index = table.indexOf(currentChars)
 
     return index;
 }

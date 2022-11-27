@@ -19,7 +19,7 @@ const htmlFileSelector = document.getElementById('file-selector');
 
 const htmlBackToConversion = document.getElementById('backToConversion');
 const htmlNextPage = document.getElementById('nextPage');
-const htmlNewPage = document.getElementById('newPage');
+//const htmlNewPage = document.getElementById('newPage');
 const htmlPreviousPage = document.getElementById('previousPage');
 
 const htmlChosenFile = document.getElementById("chosenFile");
@@ -33,6 +33,11 @@ htmlNextPage.addEventListener("click", nextPage);
 htmlPreviousPage.addEventListener("click", previousPage);
 htmlPageInput.addEventListener("input", changeCurrentPage);
 htmlPageInput.addEventListener("blur", pageChangeFinished);
+htmlPageInput.addEventListener("keydown", (e) => {
+    if (e.key == 'Enter'){
+        htmlPageInput.blur();
+    }
+} );
 
 
 // -- Helper functions -- //
@@ -67,7 +72,7 @@ function selectFile() {
         return;
     }
 
-    let shouldConvert = window.confirm("Vill du konvertera " + pefFile.name + "?")
+    let shouldConvert = window.confirm("Vill du läsa " + pefFile.name + "?")
     if (!shouldConvert){
         return;
     }
@@ -110,8 +115,13 @@ function displayCurrentPage(focusNewPage = true){
     htmlPageView.innerHTML = pageReader.getCurrentPage();
     let pageNumber = pageReader.getCurrentPageNbr();
     setPageNumber(pageNumber, true);
+    const h1 = document.getElementById('newPage');
+    document.title = h1.innerText + " - " + pageReader.title;
     if (focusNewPage){
-        htmlNewPage.focus();
+        //We need to use document.getElementById directly here
+        //since the h1 tag changes every time
+        //So a global const won't work        
+        h1.focus();
     }
     
 }
@@ -130,6 +140,7 @@ function setPageNumber(pageNumber, saveInLocalStorage = false) {
 }
 
 function goBackToConversion() {
+    document.title = "Läs punktskrift direkt";
     htmlConvertingText.style = "display:none";
     htmlChosenFile.innerHTML = "- ingen fil vald";
     toggleDiv(true);
@@ -144,13 +155,17 @@ function goBackToConversion() {
 };
 
 function nextPage() {
-    pageReader.pageForward();
-    displayCurrentPage();
+    if (pageReader.pageForward()){
+        displayCurrentPage();
+    }
+    
 }
 
 function previousPage() {
-    pageReader.pageBackward();
-    displayCurrentPage();
+    if (pageReader.pageBackward()){
+        displayCurrentPage();
+    }
+    
 }
 
 function changeCurrentPage() {
