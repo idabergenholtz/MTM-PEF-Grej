@@ -26,3 +26,14 @@ button{
 button:hover {
     background-color: var(--main-colour-hover);
 }
+
+table {
+    margin-left: auto;
+    margin-right: auto;
+    width: 70%;
+    text-align: left;
+}
+
+th, td {
+    padding: 0.3em;
+}

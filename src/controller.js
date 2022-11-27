@@ -42,6 +42,8 @@ class Controller {
         let pefTree = receiveFile(inputText)
         let metaData = pefTree.head.meta;
         console.log(`Received pef tree from parser: ${metaData.title}`);
+        console.log(`Entire meta data: `);
+        console.log(metaData);
         console.log('Entire pef object');
         console.log(pefTree);
 
