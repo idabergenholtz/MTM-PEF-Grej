@@ -13,31 +13,25 @@ const KNOWN_PEF_FILE_TYPES = [
 let fileName;
 let readingFile;
 
-const htmlPageView  = document.getElementById("text");
-const htmlPageInput = document.getElementById("goToPage");
-const htmlFileSelector = document.getElementById('file-selector');
-
+// -- Get html elements -- //
+const htmlPageView         = document.getElementById("text");
+const htmlPageInput        = document.getElementById("goToPage");
+const htmlFileSelector     = document.getElementById('file-selector');
 const htmlBackToConversion = document.getElementById('backToConversion');
-const htmlNextPage = document.getElementById('nextPage');
-//const htmlNewPage = document.getElementById('newPage');
-const htmlPreviousPage = document.getElementById('previousPage');
-
-const htmlChosenFile = document.getElementById("chosenFile");
-const htmlConvertingText = document.getElementById("convertingText");
+const htmlNextPage         = document.getElementById('nextPage');
+const htmlPreviousPage     = document.getElementById('previousPage');
+const htmlChosenFile       = document.getElementById("chosenFile");
+const htmlConvertingText   = document.getElementById("convertingText");
 
 // -- Attach callbacks -- //
-
 htmlFileSelector.addEventListener('input', selectFile);
 htmlBackToConversion.addEventListener("click", goBackToConversion);
 htmlNextPage.addEventListener("click", nextPage);
 htmlPreviousPage.addEventListener("click", previousPage);
 htmlPageInput.addEventListener("input", changeCurrentPage);
 htmlPageInput.addEventListener("blur", pageChangeFinished);
-htmlPageInput.addEventListener("keydown", (e) => {
-    if (e.key == 'Enter'){
-        htmlPageInput.blur();
-    }
-} );
+htmlPageInput.addEventListener("keydown", inputPageKeyDown)
+
 
 
 // -- Helper functions -- //
@@ -120,10 +114,10 @@ function displayCurrentPage(focusNewPage = true){
     if (focusNewPage){
         //We need to use document.getElementById directly here
         //since the h1 tag changes every time
-        //So a global const won't work        
+        //So a global const won't work
         h1.focus();
     }
-    
+
 }
 
 function formatPagePlaceHoler(pageNbr) {
@@ -148,24 +142,20 @@ function goBackToConversion() {
     // Must clear this if we go back and want to select the same file again.
     htmlFileSelector.value = '';
     pageReader.reset();
-
-    // Question: Do we want to reset the page number here?
-    //no
-    //setPageNumber(0, true);
 };
 
 function nextPage() {
     if (pageReader.pageForward()){
         displayCurrentPage();
     }
-    
+
 }
 
 function previousPage() {
     if (pageReader.pageBackward()){
         displayCurrentPage();
     }
-    
+
 }
 
 function changeCurrentPage() {
@@ -183,5 +173,11 @@ function pageChangeFinished() {
     }
     else{
         displayCurrentPage();
+    }
+}
+
+function inputPageKeyDown(event) {
+    if (event.key == 'Enter'){
+        htmlPageInput.blur();
     }
 }

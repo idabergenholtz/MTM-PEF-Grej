@@ -1,7 +1,6 @@
 import { Outputter } from './outputter.js';
-import { receiveFile } from './Parser.js';
+import { receiveFile } from './parser.js';
 import { translateToSwedish } from './translator.js';
-import { PageReader } from './page_reader.js';
 import { frontPage} from './removeFrontPage.js';
 
 
@@ -31,12 +30,12 @@ class Controller {
 
     /*
         Parameters:
-            filename <String>
-            sizeKb <Integer>
+            filename  <String>
+            sizeKb    <Integer>
             inputText <String>
+            download  <boolean>
     */
     run(fileName, sizeKb, inputText, download=false) {
-        // 1. Open file?
         //console.log(`Converting file: ${pefFile.name}, size: ${sizeKb} kB, type: ${pefFile.type}`);
         console.log('Giving file to parser');
         let pefTree = receiveFile(inputText)
@@ -49,7 +48,6 @@ class Controller {
 
         console.log('Translating all rows from braille to clear text');
 
-        //let count = 0;
         for (let volume of pefTree.body.volumes) {
             for (let section of volume.sections) {
                 for (let page of section.pages) {
@@ -58,12 +56,7 @@ class Controller {
                     }
                 }
             }
-            //document.getElementById('convertPer').textContent =
-            //                "Konvertering " + (count/pefTree.body.volumes.length)*100 + "% färdig.";
-           // count++;
         }
-        //document.getElementById('convertPer').textContent =
-        //                    "Konvertering " + 100 + "% färdig.";
         console.log('Done translating braille to clear text');
 
         //Removing front page, can be extended to include more changes to the translated pefObject.
@@ -87,9 +80,6 @@ class Controller {
             console.log(`Finished, downloading file: ${outputFileName}`);
             download(outputFileName, output);
         }
-
-        //let html = firstPage + output;
-        //document.getElementById('text').innerHTML = html;
 
         this.pageReader.addFirstPage(firstPage);
         this.pageReader.addTitle(metaData.title);

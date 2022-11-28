@@ -1,6 +1,3 @@
-import { Pef } from './pef.js';
-
-
 const OutputFormats = {
     HTML: "HTML"
 };
@@ -24,47 +21,47 @@ class OutputFormatter {
     static formatFirstPageOtherMetaDataEnd()   { throw new Error("Not implemented!"); }
 
     // --- Normal content ---/
-    static formatBodyStart()            { throw new Error("Not implemented!"); }
-    static formatVolumeStart()          { throw new Error("Not implemented!"); }
-    static formatSectionStart()         { throw new Error("Not implemented!"); }
-    static formatPageStart()            { throw new Error("Not implemented!"); }
-    static formatRowStart()             { throw new Error("Not implemented!"); }
+    static formatBodyStart()                   { throw new Error("Not implemented!"); }
+    static formatVolumeStart()                 { throw new Error("Not implemented!"); }
+    static formatSectionStart()                { throw new Error("Not implemented!"); }
+    static formatPageStart()                   { throw new Error("Not implemented!"); }
+    static formatRowStart()                    { throw new Error("Not implemented!"); }
 
-    static formatBodyEnd()              { throw new Error("Not implemented!"); }
-    static formatVolumeEnd()            { throw new Error("Not implemented!"); }
-    static formatSectionEnd()           { throw new Error("Not implemented!"); }
-    static formatPageEnd()              { throw new Error("Not implemented!"); }
-    static formatRowEnd()               { throw new Error("Not implemented!"); }
+    static formatBodyEnd()                     { throw new Error("Not implemented!"); }
+    static formatVolumeEnd()                   { throw new Error("Not implemented!"); }
+    static formatSectionEnd()                  { throw new Error("Not implemented!"); }
+    static formatPageEnd()                     { throw new Error("Not implemented!"); }
+    static formatRowEnd()                      { throw new Error("Not implemented!"); }
 }
 
 class OutputFormatterHtml extends OutputFormatter {
     // First page
-    static formatFirstPageTitleStart()  { return '<h1 tabindex=0 id="newPage" class="first-page-title">'; }
-    static formatFirstPageAuthorStart() { return '<h4 class="first-page-author">'; }
-    static formatFirstPageDateStart()   { return '<h6 class="first-page-date">'; }
-    static firstPageMetaDataTableStart()  { return '<table>'; }
-    static formatFirstPageMetaKeyStart()  { return '<tr><td>'; }
-    static formatFirstPageMetaValueStart(){ return '<td>'; }
+    static formatFirstPageTitleStart()     { return '<h1 tabindex=0 id="newPage" class="first-page-title">'; }
+    static formatFirstPageAuthorStart()    { return '<h4 class="first-page-author">'; }
+    static formatFirstPageDateStart()      { return '<h6 class="first-page-date">'; }
+    static firstPageMetaDataTableStart()   { return '<table>'; }
+    static formatFirstPageMetaKeyStart()   { return '<tr><td>'; }
+    static formatFirstPageMetaValueStart() { return '<td>'; }
 
-    static formatFirstPageTitleEnd()      { return '</h2>'; }
-    static formatFirstPageAuthorEnd()     { return '</h4>'; }
-    static formatFirstPageDateEnd()       { return '</h6>'; }
-    static firstPageMetaDataTableEnd()    { return '</table>'; }
-    static formatFirstPageMetaKeyEnd()    { return '</td>'; }
-    static formatFirstPageMetaValueEnd()  { return '</td></tr>'; }
+    static formatFirstPageTitleEnd()       { return '</h2>'; }
+    static formatFirstPageAuthorEnd()      { return '</h4>'; }
+    static formatFirstPageDateEnd()        { return '</h6>'; }
+    static firstPageMetaDataTableEnd()     { return '</table>'; }
+    static formatFirstPageMetaKeyEnd()     { return '</td>'; }
+    static formatFirstPageMetaValueEnd()   { return '</td></tr>'; }
 
     // Normal content
-    static formatBodyStart()    { return '<div class="body">'; }
-    static formatVolumeStart()  { return '<div class="volume">'; }
-    static formatSectionStart() { return '<div class="section">'; }
-    static formatPageStart()    { return '<div class="page">'; }
-    static formatRowStart()     { return '<p>'; }
+    static formatBodyStart()               { return '<div class="body">'; }
+    static formatVolumeStart()             { return '<div class="volume">'; }
+    static formatSectionStart()            { return '<div class="section">'; }
+    static formatPageStart()               { return '<div class="page">'; }
+    static formatRowStart()                { return '<p>'; }
 
-    static formatBodyEnd()      { return '</div>'; }
-    static formatVolumeEnd()    { return '</div>'; }
-    static formatSectionEnd()   { return '</div>'; }
-    static formatPageEnd()      { return '</div>'; }
-    static formatRowEnd()       { return '</p>'; }
+    static formatBodyEnd()                 { return '</div>'; }
+    static formatVolumeEnd()               { return '</div>'; }
+    static formatSectionEnd()              { return '</div>'; }
+    static formatPageEnd()                 { return '</div>'; }
+    static formatRowEnd()                  { return '</p>'; }
 }
 
 
@@ -103,7 +100,7 @@ class Outputter {
 
                     for (let [row_i, row] of page.rows.entries()) {
                         output += outputFormatter.formatRowStart();
-                        output += row;//Ändrade från row.text till endast row / Daniel
+                        output += row;
                         output += outputFormatter.formatRowEnd();
                     }
                     output += outputFormatter.formatPageEnd();
@@ -182,15 +179,6 @@ class Outputter {
     }
 
 }
-
-class FirstPageMetaData {
-    constructor(title, creator, date) {
-        this.title = title;
-        this.creator = creator;
-        this.date = date;
-    }
-}
-
 
 
 export { Outputter, OutputFormats };
