@@ -10,7 +10,6 @@
                     section(s):
                         page(s):
                             row(s):
-                                - braille <String>
                                 - text    <String>
 */
 
@@ -28,7 +27,39 @@ class Head {
 };
 
 class MetaData {
-
+    constructor(
+        format,
+        identifier,
+        title,
+        creator,
+        subject,
+        description,
+        publisher,
+        contributor,
+        date,
+        type,
+        source,
+        language,
+        relation,
+        coverage,
+        rights
+    ) {
+        this.format = format;
+        this.identifier = identifier;
+        this.title = title;
+        this.creator = creator;
+        this.subject = subject;
+        this.description = description;
+        this.publisher = publisher;
+        this.contributor = contributor;
+        this.date = date;
+        this.type = type;
+        this.source = source;
+        this.language = language;
+        this.relation = relation;
+        this.coverage = coverage;
+        this.rights = rights;
+    }
 };
 
 class Body {
@@ -55,11 +86,4 @@ class Page {
     }
 };
 
-class Row {
-    constructor(braille) {
-        this.braille = braille;
-        this.text = null;
-    }
-};
-
-export { Pef, Head, Body, Volume, Section, Page, Row };
+export { Pef, Head, MetaData, Body, Volume, Section, Page };

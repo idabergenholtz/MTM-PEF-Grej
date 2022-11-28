@@ -1,5 +1,4 @@
-import { Body, Head, Page, Pef, Section, Volume} from "./pef.js";
-//document.getElementById("pefDoc").addEventListener('change', () => readFile())
+import { Body, MetaData, Head, Page, Pef, Section, Volume} from "./pef.js";
 
 let myPefObject
 let mybody
@@ -10,22 +9,22 @@ let test = 0
 //Måste också hämta ut metadata från head och spara i ett head-objekt (? vet inte om det kallas objekt i js men antar det :)
 
 /**
- * 
+ *
  * @param {} file
  * Reads a file to a String variable
- * Starts parser 
+ * Starts parser
  */
  export function receiveFile(text){
     return startParser(text)
 }
 
 /**
- * 
- * @param {*} content 
+ *
+ * @param {*} content
  * @returns
- * 
+ *
  * Starts parsing the file
- * Påbörjar processen av att skapa hierarkin och plocka ut innehållet från <row>innehåll</row> 
+ * Påbörjar processen av att skapa hierarkin och plocka ut innehållet från <row>innehåll</row>
  */
 function startParser(content){
     mybody = createVolumes(content)
@@ -38,29 +37,13 @@ function startParser(content){
     return myPefObject
 }
 /**
- * 
- * @param {String} content 
+ *
+ * @param {String} content
  * @returns metaData - object containing all metadata
  */
 function extractMetaData(content){
     /*Create object containing attributes for each metadata tag*/
-    let metaData = {
-        format: "",
-        identifier: "",
-        title: "",
-        creator: "",
-        subject: "",
-        description: "",
-        publisher: "",
-        contributor: "",
-        date: "",
-        type: "",
-        source: "",
-        language: "",
-        relation: "",
-        coverage: "",
-        rights: ""
-    }
+    let metaData = new MetaData();
 
     let headString = content.substring(findTag(content, "head"), findEndTag(content, "head"))   //creates a substring rom <head> to </head>
 
@@ -76,15 +59,15 @@ function extractMetaData(content){
         metaData[typeOfData] = value;
         //Updates the substring after each iteration to remove the already added <dc> tag
         headString = headString.substring(endIndex + 1, headString.length);
-        
+
 
     }
     return metaData
 }
 
 /**
- * 
- * @param {String} content 
+ *
+ * @param {String} content
  * @returns Body object containing an array of volumes
  */
 function createVolumes(content){
@@ -94,15 +77,15 @@ function createVolumes(content){
         let startIndex = findTag(content, "volume")
         let endIndex = findEndTag(content, "volume")
 
-        let temp = createSections(content.substring(startIndex, endIndex))  //calls createSections with the substring from <volume> to </volume> as parameter. 
+        let temp = createSections(content.substring(startIndex, endIndex))  //calls createSections with the substring from <volume> to </volume> as parameter.
         volumeArray.push(temp)  //adds the Volume object containing an array of sections to the volumeArray
         content = content.substring(endIndex + 1, content.length);  //Updates the substring after each iteration to remove the already added <volume> tag
     }
     return new Body(volumeArray)
 }
 /**
- * 
- * @param {String} content 
+ *
+ * @param {String} content
  * @returns Volume object containing an array of sections
  */
 function createSections(content){
@@ -148,11 +131,11 @@ function createRows(content){
     let rowsArray = []
     //let texten = ''
     while(content.indexOf("<row>") != -1){
-       
-            let startIndex = findTag(content, "row")
-        //let endIndex = startIndex + findEndTag(content.substring(startIndex, content.length), "row")    
-        
-        let endIndex = startIndex + findEndTagRow(content.substring(startIndex, content.length), "/") 
+
+        let startIndex = findTag(content, "row")
+        //let endIndex = startIndex + findEndTag(content.substring(startIndex, content.length), "row")
+
+        let endIndex = startIndex + findEndTagRow(content.substring(startIndex, content.length), "/")
         //Ovantstående rad beräknar endIndex för första förkomst av </row> efter vårt startIndex, detta behöver kanske göras för alla taggar, men i våra exempel är det bara för row det var ett problem
         if(startIndex +5  < endIndex){//to handle <row /> and <row/> tags
 
@@ -162,7 +145,7 @@ function createRows(content){
             rowsArray.push("")
         }
         content = content.substring(endIndex + 1, content.length)
-        
+
     }
 
     if(isPageEmpty(rowsArray)) return new Page([])
@@ -171,13 +154,13 @@ function createRows(content){
 
 /*Finds the index of "<"+tag"*/
 function findTag(content, tag){
-    return content.indexOf("<"+tag) 
+    return content.indexOf("<"+tag)
 }
-/*Finds the first index of "</"+"tag" */    
+/*Finds the first index of "</"+"tag" */
 function findEndTag(content, tag){
     return content.indexOf("</"+tag)
 }
-/*Finds the first index of "</"+"tag" - specific for createRows*/    
+/*Finds the first index of "</"+"tag" - specific for createRows*/
 function findEndTagRow(content, tag){
     return content.indexOf(tag)-1
 }
