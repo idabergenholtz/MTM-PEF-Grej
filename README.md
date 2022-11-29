@@ -6,8 +6,8 @@ This repository contains code for a tool that can convert files in [Portable Emb
 Get some kind of live-server program, eg `http-server` from npm, or live-server in VS Code.
 Example:
 ```
-	npm install http-server
-	node_modules/http-server/bin/http-server src/
+npm install http-server
+node_modules/http-server/bin/http-server src/
 ```
 
 ## Repository structure
@@ -27,3 +27,7 @@ All logic is handled with client-side javascript.
 
 ## How to contribute
 TODO
+
+## Future improvements
+- [ ] Support for multiple languages
+- [ ] Use liblouis as converter instead of custom
