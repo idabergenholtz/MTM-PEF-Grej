@@ -67,7 +67,10 @@ function selectFile() {
 
     let pefFile = htmlFileSelector.files[0];
 
-    if (!isPefFileType(pefFile.type)) {
+    let splitFileNameArray = pefFile.name.split(".");
+    let fileSuffix = splitFileNameArray[splitFileNameArray.length-1];
+    console.log("The suffix is " + fileSuffix);
+    if (fileSuffix !== "pef") {
         window.alert("Filen du försöker ladda är inte PEF-fil.");
         return;
     }
@@ -76,7 +79,7 @@ function selectFile() {
     if (!shouldConvert){
         return;
     }
-
+    
     fileName = pefFile.name;
     let fileRead = false;
     let sizeKb = pefFile.size / 1000;
