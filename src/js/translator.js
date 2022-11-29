@@ -5,7 +5,7 @@ import {alphabetTable, uppercaseSign, numbersTable, numberSign, spaces, doubleCh
 export function translateToSwedish(braille) {
     let string = ""
     let temp
-    for(let i = 0; i < braille.length; i++){ 
+    for(let i = 0; i < braille.length; i++){
         //Check for a blank space
         let currentChar = braille.charAt(i)
         if(currentChar == spaces[0] || currentChar == spaces[1]) {
@@ -19,7 +19,7 @@ export function translateToSwedish(braille) {
             string += alphabetTable[0][temp]
             continue
         }
-        
+
         //Ignore some characters, such as cursive indicators
         temp = findInTable(currentChar, oneCharIgnoreTable)
         if(temp > -1) {
@@ -63,7 +63,7 @@ export function translateToSwedish(braille) {
             if(temp.length > 1) i += temp.length
             continue
         }
-   
+
         //Check for number signs
         temp = number(braille, i)
         if(temp.length > 0) {
@@ -91,7 +91,7 @@ function uppercase(braille, index) {
 
     //The whole word, until the next non alphabetic character, should be upper case
     for(let i = index + 2; i < braille.length; i++) {
-        let temp = findInTable(braille.charAt(i), alphabetTable[1])    
+        let temp = findInTable(braille.charAt(i), alphabetTable[1])
         if(temp <= -1) break
         string += alphabetTable[2][temp]
     }
@@ -99,7 +99,7 @@ function uppercase(braille, index) {
 }
 
 function number(braille, index) {
-    if(braille.charAt(index) !== numberSign) return "" 
+    if(braille.charAt(index) !== numberSign) return ""
     let count = 0
     let string = ""
 
