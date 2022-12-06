@@ -79,6 +79,8 @@ class PageReader {
         newPage += outputFormatter.formatPageStart();
         let pageRows = page.rows.entries();
         let pageNbr = -1;
+        let prevRow = '';
+        let prevRowHadhypen = false;
         for (let [row_i, row] of pageRows) {
             if (row_i == 0){
                 let str = row.replace(/\s+/g, '');
@@ -89,9 +91,26 @@ class PageReader {
             // special page numbers like roman numerals will be added however
             // as well as first rows not containing page numbers
             if (row_i !== 0 || pageNbr < 0) {
-                newPage += outputFormatter.formatRowStart();
-                newPage += row;
-                newPage += outputFormatter.formatRowEnd();
+                //newPage += outputFormatter.formatRowStart();
+                let shouldDeleteSpaces = prevRowHadhypen;
+                let isBlankRow = row === 'PEFBLANKROW'.replace(/\s+/g, '');
+                let hyphenFound = hasHyphen(row);
+                row = hyphenFound? taBortAvstavning(row) : row;
+                prevRowHadhypen = hyphenFound;
+                let nbrOfSpaces = countSpaces(row);
+                let lineBreak = nbrOfSpaces > countSpaces(prevRow);
+                prevRow = row;
+                row = shouldDeleteSpaces ? row.substring(nbrOfSpaces) : row;
+                if (isBlankRow){
+                    newPage += '<br><br>';
+                }
+                else if (lineBreak){
+                    newPage += '<br>&ensp;' + row;
+                }
+                else{
+                    newPage += row;
+                }
+                //newPage += outputFormatter.formatRowEnd();
             }
         }
         newPage += outputFormatter.formatPageEnd();
@@ -133,7 +152,6 @@ class PageReader {
 
     recalibrate(){
         if (this.maxPageNbr === 0){
-            console.log("did not find any page numbers")
             this.maxPageNbr = this.pages.length-1;
             for (let i = 0; i < this.pages.length; i++){
                 this.pages[i].pageNbr = i;
@@ -143,5 +161,37 @@ class PageReader {
 
 }
 
+function hasHyphen(str){
+    let index = str.length-1;
+    let letter = str.charAt(index);
+    let hasHyphen= false;
+    while(letter === ' ' || letter === '-'){
+        hasHyphen = letter === '-';
+        index--;
+        letter = str.charAt(index);
+    }
+    return hasHyphen;
+}
+
+function taBortAvstavning(str){
+    let index = str.length-1;
+    let letter = str.charAt(index);
+    while(letter === ' ' || letter === '-'){
+        str = str.substring(0, index);
+        index--;
+        letter = str.charAt(index);
+    }
+    return str;
+}
+
+function countSpaces(str){
+    let letter = str.charAt(0);
+    let count = 0;
+    while (letter === ' '){
+        count++;
+        letter = str.charAt(count);
+    }
+    return count;
+}
 
 export { PageReader };

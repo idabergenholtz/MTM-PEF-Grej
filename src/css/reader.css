@@ -1,12 +1,24 @@
 h1 {
+    width: 100vw;
     background-color: var(--main-colour);
-    margin: 0;
     color: white;
+    margin: 0;
     line-height: calc(var(--default-spacing) * 8);
     height: calc(var(--default-spacing) * 8);
+    text-align: center;
+
 }
 
 #backToConversion {
     background-color: var(--main-colour);
     color: white;
+}
+
+.bookText {
+    text-align: left;
+
+}
+
+.buttonPanel{
+    text-align: center; 
 }

@@ -29,17 +29,19 @@
 
     <div id = "readerDiv" style="display:none">
         <!--<h1 tabindex=-1 id = "newPage"> Ny sida </h1>-->
-        <div id = "text"><h1 tabindex=-1 id = "newPage"> Sidnavigering </h1></div>
+        <div id = "text" class="bookText"><h1 tabindex=-1 id = "newPage"> Sidnavigering </h1></div>
         <br>
-        <button id = "nextPage">Nästa sida</button>
-        <br>
-        <button id = "previousPage">Föregående sida</button>
-        <br>
-        Gå till sida: <input id = "goToPage" type="text" placeHolder="1">
-        <br>
-        <button id = "backToConversion" >
-            Tillbaka till konvertering
-        </button>
+        <div class="buttonPanel">
+            <button id = "nextPage">Nästa sida</button>
+            <br>
+            <button id = "previousPage">Föregående sida</button>
+            <br>
+            Gå till sida: <input id = "goToPage" type="text" placeHolder="1">
+            <br>
+            <button id = "backToConversion" >
+                Tillbaka till konvertering
+            </button>
+        </div>
     </div>
 
     <script src="js/index.js" type="module"></script>
