@@ -1,7 +1,7 @@
 let unfPefObject;
 let finishedObject;
 const testExp = /[A-Z]( ){2,}/gi;
-const testExp2 = /( ){2,}/gi;
+const testExp2 = /(PEFBLANKROW)/gi;
 /**
  * Has to be called after translation 
  */

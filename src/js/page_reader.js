@@ -73,28 +73,8 @@ class PageReader {
         }
     }
 
-    addPage(page, outputFormatter) {
+    addPage(newPage, pageNbr) {
 
-        let newPage = ''
-        newPage += outputFormatter.formatPageStart();
-        let pageRows = page.rows.entries();
-        let pageNbr = -1;
-        for (let [row_i, row] of pageRows) {
-            if (row_i == 0){
-                let str = row.replace(/\s+/g, '');
-                pageNbr = parseInt(str);
-                pageNbr = !isNaN(pageNbr) ? pageNbr : -1;
-            }
-            // page number row will not be added to normal page text
-            // special page numbers like roman numerals will be added however
-            // as well as first rows not containing page numbers
-            if (row_i !== 0 || pageNbr < 0) {
-                newPage += outputFormatter.formatRowStart();
-                newPage += row;
-                newPage += outputFormatter.formatRowEnd();
-            }
-        }
-        newPage += outputFormatter.formatPageEnd();
         this.maxPageNbr +=  pageNbr > 0 ? 1 : 0;
         // create pagenumber h1
         let shouldDisplay = pageNbr > 0  || this.pages.length === 0;
@@ -109,7 +89,7 @@ class PageReader {
             firstLine += '<h1 tabindex=0 id = "newPage"> Sidan ' + nbrDisplay + '</h1>';
         }
         //add to array
-        const fullPage = {text: firstLine + newPage, pageNbr: this.maxPageNbr};
+        const fullPage = {text: firstLine + "<div class=\"text-container\">" + newPage + "</div>", pageNbr: this.maxPageNbr};
         this.pages.push(fullPage);
 
     }
@@ -133,7 +113,6 @@ class PageReader {
 
     recalibrate(){
         if (this.maxPageNbr === 0){
-            console.log("did not find any page numbers")
             this.maxPageNbr = this.pages.length-1;
             for (let i = 0; i < this.pages.length; i++){
                 this.pages[i].pageNbr = i;
@@ -142,6 +121,5 @@ class PageReader {
     }
 
 }
-
 
 export { PageReader };

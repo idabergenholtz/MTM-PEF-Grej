@@ -35,7 +35,7 @@ class Controller {
             inputText <String>
             download  <boolean>
     */
-    run(fileName, sizeKb, inputText, download=false) {
+    run(fileName, sizeKb, inputText, byPage = true, download=false) {
         //console.log(`Converting file: ${pefFile.name}, size: ${sizeKb} kB, type: ${pefFile.type}`);
         console.log('Giving file to parser');
         let pefTree = receiveFile(inputText)
@@ -70,10 +70,12 @@ class Controller {
 
         console.log(firstPage);
 
-        console.log('Giving pef tree with clear text to outputter');
-        let output = Outputter.format(pefTree, outputFileFormat, this.pageReader);
-        console.log('Outputter complete');
-
+        if (!byPage) {
+            console.log('Giving pef tree with clear text to outputter');
+            let output = firstPage + Outputter.format(pefTree, outputFileFormat);
+            console.log('Outputter complete');
+            return output;
+        }
 
         if (download) {
             let outputFileName = this.getOutputFileName(fileName);
@@ -81,20 +83,34 @@ class Controller {
             download(outputFileName, output);
         }
 
-        this.pageReader.addFirstPage(firstPage);
-        this.pageReader.addTitle(metaData.title);
-        this.pageReader.recalibrate();
+        if (byPage) {
+            addPages(pefTree, outputFileFormat, this.pageReader);
+            this.pageReader.addFirstPage(firstPage);
+            this.pageReader.addTitle(metaData.title);
+            this.pageReader.recalibrate();
 
-        //look if in local storage
-        let lastPage = window.localStorage.getItem(fileName); //identifier global fileName
-        if (lastPage === null){
-            window.localStorage.setItem(fileName, "0");
-            lastPage = "0";
+            //look if in local storage
+            let lastPage = window.localStorage.getItem(fileName); //identifier global fileName
+            if (lastPage === null){
+                window.localStorage.setItem(fileName, "0");
+                lastPage = "0";
+            }
+            this.pageReader.setCurrentPage(parseInt(lastPage));
         }
-        this.pageReader.setCurrentPage(parseInt(lastPage));
 
     }
 }
 
+function addPages(pefObject, outputFormat, pageReader) {
+    let outputFormatter = Outputter.getOutputFormatter(outputFormat);
+    for (let [volumes_i, volume] of pefObject.body.volumes.entries()) {
+        for (let [section_i, section] of volume.sections.entries()) {
+            for (let [page_i, page] of section.pages.entries()) {
+                let formattedPage = Outputter.formatPage(page, outputFormatter);
+                pageReader.addPage(formattedPage.page, formattedPage.pageNbr);
+            }
+        }
+    }
+}
 
 export { Controller };

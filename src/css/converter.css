@@ -1,4 +1,6 @@
-
+#convertDiv {
+    text-align: center;
+}
 
 #chosenFile {
     margin: var(--default-spacing);

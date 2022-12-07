@@ -29,11 +29,8 @@ let test = 0
 function startParser(content){
     mybody = createVolumes(content)
     myhead = new Head(extractMetaData(content))
-    //console.log(mybody.volumes)
     myPefObject = new Pef(myhead, mybody)
     console.log(myPefObject)
-   // console.log(convertToSwedish(myPefObject.body.volumes[0].sections[0].pages[0].rows[4]))
-    console.log(myPefObject.body.volumes[0].sections[0].pages[0].rows[4])
     return myPefObject
 }
 /**
@@ -129,8 +126,8 @@ function createPages(content){
 
 function createRows(content){
     let rowsArray = []
-    //let texten = ''
-    while(content.indexOf("<row>") != -1){
+
+    while(content.indexOf("<row") != -1){
 
         let startIndex = findTag(content, "row")
         //let endIndex = startIndex + findEndTag(content.substring(startIndex, content.length), "row")
@@ -140,9 +137,13 @@ function createRows(content){
         if(startIndex +5  < endIndex){//to handle <row /> and <row/> tags
 
             let rowContent = content.substring(startIndex + 5, endIndex)
-            rowsArray.push(rowContent)
+            if(isRowEmpty(rowContent)){
+                rowsArray.push('PEFBLANKROW')
+            }else{
+                rowsArray.push(rowContent)
+            }
         } else{
-            rowsArray.push("")
+           rowsArray.push('PEFBLANKROW')
         }
         content = content.substring(endIndex + 1, content.length)
 
@@ -164,10 +165,19 @@ function findEndTag(content, tag){
 function findEndTagRow(content, tag){
     return content.indexOf(tag)-1
 }
-/* Checks if a page contains anything other than blankspaces, a braille blankspace is different from a normal blankspace. Braille: '⠀', Normal: ' '*/
+/* Checks if a page contains anything other than blank rows*/
 function isPageEmpty(rowsArray){
     for(let i = 0;i<rowsArray.length;i++){
-        if(!(!rowsArray[i].replaceAll('⠀', ' ').trim())) return false;
+        if(!(rowsArray[i] === 'PEFBLANKROW')) return false;
     }
+    return true;
+}
+/**
+ * Cheks if a row contains anything other than blankspaces, a braille blankspace is different from a normal blankspace.  '⠀', Normal: ' '
+ * returns true if empty
+ * */
+function isRowEmpty(row){
+    let temp = row.replaceAll('⠀', '');
+    if(temp.length > 0) return false;
     return true;
 }
