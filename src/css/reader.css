@@ -1,10 +1,13 @@
+:root {
+    --top-bar-height: calc(var(--default-spacing) * 8);
+}
 h1 {
     width: 100vw;
     background-color: var(--main-colour);
     color: white;
     margin: 0;
-    line-height: calc(var(--default-spacing) * 8);
-    height: calc(var(--default-spacing) * 8);
+    line-height: var(--top-bar-height);
+    height: var(--top-bar-height);
     text-align: center;
 
 }
@@ -14,11 +17,21 @@ h1 {
     color: white;
 }
 
-.bookText {
-    text-align: left;
 
+.bookText h1 {
+    text-align: center;
+    width: 100%;
 }
 
 .buttonPanel{
     text-align: center; 
+}
+
+.text-container, .first-page-author, .first-page-date, .volume, #flowText table {
+    width: 800px;
+    min-height: 250px;
+    max-width: 90%;
+    margin: auto;
+    padding: 20px;
+    line-height: 150%;    
 }

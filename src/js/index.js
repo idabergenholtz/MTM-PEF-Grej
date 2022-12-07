@@ -140,7 +140,7 @@ function convert(){
     }
     else{
         //htmlFlowView.innerHTML = "<h1  tabindex=0> Trevlig läsning</h1>"
-        htmlFlowView.innerHTML = controller.run(fileName, 0, inputText, false);
+        htmlFlowView.innerHTML = controller.run(fileName, 0, inputText, false);//--------------------------------------------------
         toggleDiv(false, false);
         // let scrollTo = parseInt(window.localStorage.getItem(fileName + "_flow"));
         // window.location.hash = "jump_to_this_location";

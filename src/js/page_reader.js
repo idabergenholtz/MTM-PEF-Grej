@@ -89,7 +89,7 @@ class PageReader {
             firstLine += '<h1 tabindex=0 id = "newPage"> Sidan ' + nbrDisplay + '</h1>';
         }
         //add to array
-        const fullPage = {text: firstLine + newPage, pageNbr: this.maxPageNbr};
+        const fullPage = {text: firstLine + "<div class=\"text-container\">" + newPage + "</div>", pageNbr: this.maxPageNbr};
         this.pages.push(fullPage);
 
     }
