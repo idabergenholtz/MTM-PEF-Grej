@@ -142,8 +142,9 @@ function convert(){
         //htmlFlowView.innerHTML = "<h1  tabindex=0> Trevlig läsning</h1>"
         htmlFlowView.innerHTML = controller.run(fileName, 0, inputText, false);
         toggleDiv(false, false);
-        let scrollTo = parseInt(window.localStorage.getItem(fileName + "_flow"));
+        // let scrollTo = parseInt(window.localStorage.getItem(fileName + "_flow"));
         // window.location.hash = "jump_to_this_location";
+        /*
         if (!isNaN(scrollTo)){
             document.documentElement.scrollTop = scrollTo;        
         }
@@ -163,6 +164,7 @@ function convert(){
             el.innerText = "<<SPARAD POSITION>>"
             document.getElementById(smallestId.id).focus();
         }
+        */
     }
     inputText = '';
 }
@@ -178,11 +180,11 @@ function downloadFile(filename, text) {
 }
 
 //FLOW TEXT NAVIGATION
-
+/*
 window.addEventListener("beforeunload", (event) => {
     window.localStorage.setItem(fileName + "_flow", document.documentElement.scrollTop);
 })
-
+*/
 // PAGE NAVIGATION
 
 function displayCurrentPage(focusNewPage = true){
