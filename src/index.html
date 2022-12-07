@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -23,8 +23,17 @@
         <!--<h3 id="convertPer"></h3>
         <div id = "text"></div>
         Need to download stuff -->
+
+        
+        <h3> Vill du läsa boken sida för sida eller som löpande text?</h3>
+        <input type="radio" id="byPage" name="howToRead" value="BYPAGE"> Sida för sida
+        <input type="radio" id="oneFlow" name="howToRead" value="ONEFLOW"> Löpande text <br>
         <iframe id="download_frame" style="display:none;"></iframe>
+        <br>
+        <button id="convert-btn">Läs boken</button>
+        
         <h3 id="convertingText" style="display:none">Konverterar ...</h3>
+
     </div>
 
     <div id = "readerDiv" style="display:none">
@@ -43,6 +52,11 @@
             </button>
         </div>
     </div>
+
+    <div id = "flowDiv" style="display:none">
+        <div id = "flowText" class="bookText"></div>
+    </div>
+
 
     <script src="js/index.js" type="module"></script>
 

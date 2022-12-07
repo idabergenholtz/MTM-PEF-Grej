@@ -13,6 +13,9 @@ const KNOWN_PEF_FILE_TYPES = [
 let fileName;
 let readingFile;
 
+//extra global for making convert with choice work
+let inputText = '';
+
 // -- Get html elements -- //
 const htmlPageView         = document.getElementById("text");
 const htmlPageInput        = document.getElementById("goToPage");
@@ -23,6 +26,10 @@ const htmlPreviousPage     = document.getElementById('previousPage');
 const htmlChosenFile       = document.getElementById("chosenFile");
 const htmlConvertingText   = document.getElementById("convertingText");
 
+// html elements for choosing reading style
+const htmlConvertBtn = document.getElementById("convert-btn");
+const htmlFlowView = document.getElementById("flowText");
+
 // -- Attach callbacks -- //
 htmlFileSelector.addEventListener('input', selectFile);
 htmlBackToConversion.addEventListener("click", goBackToConversion);
@@ -32,15 +39,29 @@ htmlPageInput.addEventListener("input", changeCurrentPage);
 htmlPageInput.addEventListener("blur", pageChangeFinished);
 htmlPageInput.addEventListener("keydown", inputPageKeyDown)
 
+//extra attach callbacks
+htmlConvertBtn.addEventListener("click", convert);
 
 
 // -- Helper functions -- //
 
-function toggleDiv(toConvertDiv){
-    let convDiv = document.getElementById("convertDiv");
-    let readDiv = document.getElementById("readerDiv");
-    readDiv.style.display = toConvertDiv ? "none" : "block";
-    convDiv.style.display = toConvertDiv ? "block" : "none";
+function toggleDiv(toConvertDiv, pageByPage = true){
+    // let convDiv = document.getElementById("convertDiv");
+    // let readDiv = document.getElementById("readerDiv");
+    // readDiv.style.display = toConvertDiv ? "none" : "block";
+    // convDiv.style.display = toConvertDiv ? "block" : "none";
+    
+    document.getElementById("convertDiv").style.display = toConvertDiv ? "block" : "none";
+    if (toConvertDiv){
+        document.getElementById("readerDiv").style.display = "none";
+        document.getElementById("flowDiv").style.display = "none";
+    }
+    else if (pageByPage){
+        document.getElementById("readerDiv").style.display = "block";
+    }
+    else{
+        document.getElementById("flowDiv").style.display = "block";
+    }
 }
 
 function isPefFileType(fileType) {
@@ -69,10 +90,11 @@ function selectFile() {
         return;
     }
 
-    let shouldConvert = window.confirm("Vill du läsa " + pefFile.name + "?")
-    if (!shouldConvert){
-        return;
-    }
+
+    // let shouldConvert = window.confirm("Vill du läsa " + pefFile.name + "?")
+    // if (!shouldConvert){
+    //     return;
+    // }
     
     fileName = pefFile.name;
     let fileRead = false;
@@ -80,22 +102,69 @@ function selectFile() {
 
     // Create filereader and start reading the file.
     let reader = new FileReader();
-    reader.addEventListener("loadend", () => convertFile(reader, sizeKb));
+    reader.addEventListener("loadend", () => saveInputText(reader, sizeKb));
     readingFile = true;
     reader.readAsText(pefFile);
 
     // Update UI
     htmlChosenFile.innerHTML = fileName;
-    htmlConvertingText.style = "display:block";
+    //htmlConvertingText.style = "display:block";
 }
 
 /* Gets called when the input file has successfully been loaded. */
-function convertFile(reader, sizeKb) {
+//previous name was convert()
+function saveInputText(reader, sizeKb) {
     readingFile = false;
-    let inputText = reader.result;
-    controller.run(fileName, sizeKb, inputText);
-    displayCurrentPage();
-    toggleDiv(false);
+    //let inputText = reader.result;
+    inputText = reader.result;
+    // controller.run(fileName, sizeKb, inputText);
+    // displayCurrentPage();
+    // toggleDiv(false);
+}
+
+function convert(){
+    if (readingFile) {
+        alert("Filen är inte färdigläst.");
+        return;
+    }
+    if (inputText === ''){
+        alert("Ingen fil är vald.")
+        return;
+    }
+    htmlConvertingText.style = "display:block";
+    let byPage = document.getElementById("byPage").checked;
+    if (byPage){
+        controller.run(fileName, 0, inputText);
+        displayCurrentPage();
+        toggleDiv(false);
+    }
+    else{
+        //htmlFlowView.innerHTML = "<h1  tabindex=0> Trevlig läsning</h1>"
+        htmlFlowView.innerHTML = controller.run(fileName, 0, inputText, false);
+        toggleDiv(false, false);
+        let scrollTo = parseInt(window.localStorage.getItem(fileName + "_flow"));
+        // window.location.hash = "jump_to_this_location";
+        if (!isNaN(scrollTo)){
+            document.documentElement.scrollTop = scrollTo;        
+        }
+        let checkpoints = document.getElementsByClassName("checkpoint");
+        console.log("checkpoints length = " + checkpoints.length)
+        let smallestId = {id: '', pos: 1000000};
+        for (let i = 0; i < checkpoints.length; i++){
+            let checkpoint = checkpoints.item(i);
+            let pos = Math.abs(checkpoint.getBoundingClientRect().top);
+            if (pos < smallestId.pos){
+                smallestId = {id: checkpoint.id, pos: pos};
+            }
+        }
+        if (smallestId.id !== ''){
+            window.location.hash = smallestId.id;
+            let el = document.getElementById(smallestId.id);
+            el.innerText = "<<SPARAD POSITION>>"
+            document.getElementById(smallestId.id).focus();
+        }
+    }
+    inputText = '';
 }
 
 function downloadFile(filename, text) {
@@ -107,6 +176,14 @@ function downloadFile(filename, text) {
     downloadDummyElement.click();
     document.body.removeChild(downloadDummyElement);
 }
+
+//FLOW TEXT NAVIGATION
+
+window.addEventListener("beforeunload", (event) => {
+    window.localStorage.setItem(fileName + "_flow", document.documentElement.scrollTop);
+})
+
+// PAGE NAVIGATION
 
 function displayCurrentPage(focusNewPage = true){
     htmlPageView.innerHTML = pageReader.getCurrentPage();

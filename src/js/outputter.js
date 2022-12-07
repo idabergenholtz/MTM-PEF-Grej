@@ -87,7 +87,7 @@ class Outputter {
         Returns:
             <String>: Formatted output text
     */
-    static format(pefObject, outputFormat, pageReader) {
+    static format(pefObject, outputFormat) {
         let outputFormatter = Outputter.getOutputFormatter(outputFormat);
         let output = '';
         for (let [volumes_i, volume] of pefObject.body.volumes.entries()) {
@@ -95,22 +95,74 @@ class Outputter {
             for (let [section_i, section] of volume.sections.entries()) {
                 output += outputFormatter.formatSectionStart();
                 for (let [page_i, page] of section.pages.entries()) {
-                    let outputIndex = output.length;
-                    output += outputFormatter.formatPageStart();
-
-                    for (let [row_i, row] of page.rows.entries()) {
-                        output += outputFormatter.formatRowStart();
-                        output += row;
-                        output += outputFormatter.formatRowEnd();
-                    }
-                    output += outputFormatter.formatPageEnd();
-                    pageReader.addPage(page, outputFormatter);
+                    // output += '<span id = "checkpoint' + page_i + '" tabindex=0>';
+                    output += '<span id="checkpoint_'+ page_i + '" class="checkpoint"'
+                        + 'style="white-space:nowrap" tabindex=0></span>';
+                    output += this.formatPage(page, outputFormatter).page;
+                    // output += '</span>'
                 }
                 output += outputFormatter.formatSectionEnd();
             }
             output += outputFormatter.formatVolumeEnd();
         }
+        // output += "<span id='jump_to_this_location'>Jump here!</span>";
         return output;
+    }
+    
+    /**
+     * 
+     * @param {*} page 
+     * @param {*} outputFormatter 
+     * @returns object with page text and page nbr
+     */
+    static formatPage(page, outputFormatter) {
+        let newPage = ''
+        // newPage += outputFormatter.formatPageStart();
+        let pageRows = page.rows.entries();
+        let pageNbr = -1;
+        let prevRow = '';
+        let prevRowHadhypen = false;
+        for (let [row_i, row] of pageRows) {
+            if (row_i == 0){
+                let str = row.replace(/\s+/g, '');
+                pageNbr = parseInt(str);
+                pageNbr = !isNaN(pageNbr) ? pageNbr : -1;
+            }
+            // page number row will not be added to normal page text
+            // special page numbers like roman numerals will be added however
+            // as well as first rows not containing page numbers
+            let isBlankRow = row === 'PEFBLANKROW'.replace(/\s+/g, '');
+            if (isBlankRow){
+                newPage += '<br>';
+            }
+            else if (pageNbr < 0){
+                newPage += outputFormatter.formatRowStart();
+                newPage += row;
+                newPage += outputFormatter.formatRowEnd();
+            }
+            else if (row_i !== 0) {
+                //newPage += outputFormatter.formatRowStart();
+                let shouldDeleteSpaces = prevRowHadhypen;
+                let hyphenFound = hasHyphen(row);
+                row = hyphenFound ? taBortAvstavning(row) : row;
+                prevRowHadhypen = hyphenFound;
+                let nbrOfSpaces = countSpaces(row);
+                let lineBreak = nbrOfSpaces > countSpaces(prevRow) && prevRow !== '';
+                prevRow = row;
+                row = shouldDeleteSpaces ? row.substring(nbrOfSpaces) : row;
+                
+                if (lineBreak){
+                    newPage += '<br>&ensp;' + row;
+                }
+                else{
+                    newPage += row;
+                }
+                //newPage += outputFormatter.formatRowEnd();
+            }
+        }
+        // newPage += outputFormatter.formatPageEnd();
+
+        return {page: newPage, pageNbr: pageNbr};
     }
 
     /*
@@ -178,6 +230,40 @@ class Outputter {
         return output;
     }
 
+}
+
+//helper functions
+function hasHyphen(str){
+    let index = str.length-1;
+    let letter = str.charAt(index);
+    let hasHyphen= false;
+    while(letter === ' ' || letter === '-'){
+        hasHyphen = letter === '-';
+        index--;
+        letter = str.charAt(index);
+    }
+    return hasHyphen;
+}
+
+function taBortAvstavning(str){
+    let index = str.length-1;
+    let letter = str.charAt(index);
+    while(letter === ' ' || letter === '-'){
+        str = str.substring(0, index);
+        index--;
+        letter = str.charAt(index);
+    }
+    return str;
+}
+
+function countSpaces(str){
+    let letter = str.charAt(0);
+    let count = 0;
+    while (letter === ' '){
+        count++;
+        letter = str.charAt(count);
+    }
+    return count;
 }
 
 
