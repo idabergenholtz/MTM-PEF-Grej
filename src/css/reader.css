@@ -23,16 +23,13 @@ h1 {
     width: 100%;
 }
 
-.buttonPanel{
-    text-align: center; 
-}
-
-.text-container, .first-page-author, .first-page-date, .volume, #flowText table {
+.text-container,.buttonPanel, .first-page-author, .first-page-date, .volume, #flowText table {
     width: 800px;
     max-width: 90%;
     margin: auto;
     padding: 20px;
     line-height: 150%;    
+    text-align: left; 
 }
 
 .text-container {

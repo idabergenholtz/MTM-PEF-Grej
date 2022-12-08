@@ -18,7 +18,7 @@ button{
     color: white;
     border-radius: 0.4rem;
     border:none;
-    margin: 5px
+    margin: 5px 0;
 }
 
 button:hover {
