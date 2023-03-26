@@ -95,11 +95,7 @@ class Outputter {
             for (let [section_i, section] of volume.sections.entries()) {
                 output += outputFormatter.formatSectionStart();
                 for (let [page_i, page] of section.pages.entries()) {
-                    // output += '<span id = "checkpoint' + page_i + '" tabindex=0>';
-                    output += '<span id="checkpoint_'+ page_i + '" class="checkpoint"'
-                        + 'style="white-space:nowrap" tabindex=0></span>';
                     output += this.formatPage(page, outputFormatter).page;
-                    // output += '</span>'
                 }
                 output += outputFormatter.formatSectionEnd();
             }
@@ -109,6 +105,9 @@ class Outputter {
         return output;
     }
     
+    static foundContents = 0;
+    static stopLooking = false
+    static contentPages = []
     /**
      * 
      * @param {*} page 
@@ -122,12 +121,26 @@ class Outputter {
         let pageNbr = -1;
         let prevRow = '';
         let prevRowHadhypen = false;
+
+        let volymCounter = 0
+
         for (let [row_i, row] of pageRows) {
             if (row_i == 0){
                 let str = row.replace(/\s+/g, '');
                 pageNbr = parseInt(str);
                 pageNbr = !isNaN(pageNbr) ? pageNbr : -1;
             }
+
+            if (row.toUpperCase().includes("INNEHÅLL")){
+                // console.log(row)
+                this.foundContents += 1;
+            }
+
+
+            if (this.foundContents == 1 && row.toUpperCase().includes("VOLYM")){
+                volymCounter++;
+            }
+
             // page number row will not be added to normal page text
             // special page numbers like roman numerals will be added however
             // as well as first rows not containing page numbers
@@ -161,7 +174,37 @@ class Outputter {
             }
         }
         // newPage += outputFormatter.formatPageEnd();
+        if (volymCounter > 0){
+            ///console.log(newPage)
+            pageRows = page.rows.entries();
+            let r = /\d+/g;
+            let contentArray = []
+            let str = ''
+            let nbr = -1
+            for (let [row_i, row] of pageRows) {
+                let matches = row.match(r)
+                str += row
+                if (matches){
+                    // let str = ""
+                    // matches.forEach(e => str += e + " ")
+                    // str += row + matches[matches.length -1]
+                    // console.log(str)
+                    let prevNbr = nbr
 
+                    let newNbr = matches[matches.length-1]
+                    if (newNbr >= prevNbr){
+                        nbr = newNbr
+                        contentArray.push(str)
+                        str = ''
+                    }
+                }
+            }
+            let ind = 0
+            contentArray.forEach(e => {
+                let out = "ROW " + ind + ": " + e
+                console.log(out)
+            });
+        }
         return {page: newPage, pageNbr: pageNbr};
     }
 

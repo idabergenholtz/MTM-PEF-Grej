@@ -11,6 +11,7 @@
 </head>
 <body>
     <div id ="convertDiv">
+        <!--<h1>PUNKT ONLINE</h1>(DOT ON LINE MATH JOKE)/LEGIMUS PUNKT/PUNKTERA MERA/TRYCKT PUNKT ONLINE-->
         <h1>Läs punktskrift direkt</h1> <p>
             När du har laddat ner en punktskriftsbok från Legimus 
             kan du läsa den här med din punktdisplay.</p>
@@ -56,7 +57,16 @@
     </div>
 
     <div id = "flowDiv" style="display:none">
-        <div id = "flowText" class="bookText"></div>
+        <div id = firstPage></div>
+        <div class="buttonPanel">
+            <button id = "goToSavedPosition">Senast sparade läsposition</button>
+            <button id = "goToBeginning">Starten av boken</button>
+        </div>
+        <div contenteditable="true" id = "flowText" class="bookText" style="height: 600px;overflow: scroll;overflow-x: hidden;"></div>
+        <div class="buttonPanel">
+            <button id="savePos">Spara läsposition</button>
+            <button id="backToConversion2">Tillbaka till konvertering</button>
+        </div>
     </div>
 
 
