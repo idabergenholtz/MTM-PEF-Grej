@@ -33,6 +33,8 @@
         <label for="oneFlow">Löpande text</label> <br>
         <iframe id="download_frame" style="display:none;"></iframe>
         <br>
+        
+
         <button id="convert-btn">Läs boken</button>
         
         <h3 id="convertingText" style="display:none">Konverterar ...</h3>
@@ -41,7 +43,14 @@
 
     <div id = "readerDiv" style="display:none">
         <!--<h1 tabindex=-1 id = "newPage"> Ny sida </h1>-->
-        <div id = "text" class="bookText"><h1 tabindex=-1 id = "newPage"> Sidnavigering </h1></div>
+        <button id = "autoPageTurnBtn" >
+            Automatiskt sidbyte (ej aktiverad)
+         </button>
+         <!--
+         <input id = "findPhrase" type="text" placeHolder="Sök efter ord eller fras">
+         <span id="nbrOfMatches" style="color:blue">0</span> matchningar
+        -->
+        <div id = "text" class="bookText"><h1 tabindex=0 id = "newPage"> Sidnavigering </h1></div>
         <br>
         <div class="buttonPanel">
             <button id = "nextPage">Nästa sida</button>
@@ -53,9 +62,10 @@
             <button id = "backToConversion" >
                 Tillbaka till konvertering
             </button>
+            
         </div>
     </div>
-
+    
     <div id = "flowDiv" style="display:none">
         <div id = firstPage></div>
         <div class="buttonPanel">
@@ -68,7 +78,7 @@
             <button id="backToConversion2">Tillbaka till konvertering</button>
         </div>
     </div>
-
+    
 
     <script src="js/index.js" type="module"></script>
 

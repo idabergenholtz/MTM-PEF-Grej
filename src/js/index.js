@@ -46,6 +46,7 @@ htmlConvertBtn.addEventListener("click", convert);
 // -- Helper functions -- //
 
 function toggleDiv(toConvertDiv, pageByPage = true){
+
     // let convDiv = document.getElementById("convertDiv");
     // let readDiv = document.getElementById("readerDiv");
     // readDiv.style.display = toConvertDiv ? "none" : "block";
@@ -62,6 +63,7 @@ function toggleDiv(toConvertDiv, pageByPage = true){
     else{
         document.getElementById("flowDiv").style.display = "block";
     }
+    
 }
 
 function isPefFileType(fileType) {
@@ -138,20 +140,161 @@ function convert(){
     else{
         let text = controller.run(fileName, 0, inputText, false);
         //findContents(text)
+        
         htmlFlowText.innerHTML = text
         toggleDiv(false, false);
     }
     inputText = '';
+    // findPhraseField.value="0";
+    // matches =[]
 }
 
-function findContents(text){
-    let r = /\d+/g;
-    let matches = text.match(r)
-    matches.forEach(e => console.log(e))
-    console.log("First match:" + matches[0])
-    console.log("2nd match:" + matches[1])
+
+// PAGE NAVIGATION
+
+function displayCurrentPage(focusNewPage = true){
+    htmlPageView.innerHTML = pageReader.getCurrentPage();
+    let pageNumber = pageReader.getCurrentPageNbr();
+    setPageNumber(pageNumber, true);
+    const h1 = document.getElementById('newPage');
+    document.title = h1.innerText + " - " + pageReader.title;
+    if (focusNewPage){
+        //We need to use document.getElementById directly here
+        //since the h1 tag changes every time
+        //So a global const won't work
+        const daPage = document.getElementById('currentPage')
+        if (daPage != null) {
+           daPage.focus();
+           daPage.click(); 
+        }
+        else {
+            h1.focus()
+        }
+        
+    // daPage.addEventLi    stener("blur", (event) =>{
+        //     nextPage()
+        // });
+    }
+
 }
 
+function formatPagePlaceHoler(pageNbr) {
+    return `${pageNbr} (av ${pageReader.getNbrOfPages()})`;
+}
+
+function setPageNumber(pageNumber, saveInLocalStorage = false) {
+    htmlPageInput.value = "";
+    htmlPageInput.placeholder = formatPagePlaceHoler(pageNumber);
+    // htmlNextPage.innerHTML = "Nästa sida (" + (pageNumber+1) + ")";
+    // htmlPreviousPage.innerHTML = "Föregående sida (" + (pageNumber-1) + ")";
+    if (saveInLocalStorage) {
+        window.localStorage.setItem(fileName, "" + pageNumber);
+    }
+}
+
+function goBackToConversion() {
+    storedRange = null;
+    selection = null;
+    goToStart = false;
+    window.getSelection().removeAllRanges()
+    document.title = "Läs punktskrift direkt";
+    htmlConvertingText.style = "display:none";
+    htmlChosenFile.innerHTML = "- ingen fil vald";
+    toggleDiv(true);
+
+    // Must clear this if we go back and want to select the same file again.
+    htmlFileSelector.value = '';
+    pageReader.reset();
+};
+
+
+let autoPageTurn = false
+const autoPageTurnBtn = document.getElementById("autoPageTurnBtn")
+autoPageTurnBtn.addEventListener("click", (e) =>{
+    autoPageTurn = !autoPageTurn
+    let label = autoPageTurn ? "(aktiverad)" : "(ej aktiverad)"
+    autoPageTurnBtn.innerHTML = "Automatiskt sidbyte " + label;
+    
+});
+
+htmlNextPage.addEventListener("focus", (e) =>{
+    if (autoPageTurn){
+        nextPage()
+    }
+    
+});
+
+//Phrase finding
+// const findPhraseField = document.getElementById("findPhrase")
+// findPhraseField.addEventListener("input", searchPhrase)
+// findPhraseField.addEventListener("keydown", event => goToMatch(event))
+// let matches = []
+// let total = 0
+// let phrase = ""
+// function searchPhrase(){
+//     phrase = findPhraseField.value
+//     if (phrase === ""){
+//         matches =[]
+//         total = 0
+//     }
+//     else {
+//         let finding = pageReader.findPhrase(phrase)
+//         matches = finding.matches
+//         total = finding.total
+        
+//     }
+    
+//     document.getElementById("nbrOfMatches").innerHTML = total
+
+// }
+// function goToMatch(event){
+//     if (event.key == "Enter") {
+//         let pNbr = matches[0]
+//         pageReader.setCurrentPage(pNbr);
+//         htmlPageView.innerHTML = pageReader.getCurrentPage();
+//         pageReader.highLightPhrases(pNbr,phrase)
+//         //displayCurrentPage()
+//     }
+    
+
+// }
+function nextPage() {
+    if (pageReader.pageForward()){
+        displayCurrentPage();
+    }
+
+}
+
+function previousPage() {
+    if (pageReader.pageBackward()){
+        displayCurrentPage();
+    }
+
+}
+
+function changeCurrentPage() {
+    let newPage = parseInt(htmlPageInput.value);
+    if (isNaN(newPage)){
+        newPage = parseInt(htmlPageInput.placeholder);
+    }
+    pageReader.setCurrentPage(newPage);
+    htmlPageView.innerHTML = pageReader.getCurrentPage();
+}
+
+function pageChangeFinished() {
+    if (htmlPageInput.value === ""){
+        displayCurrentPage(false);
+    }
+    else{
+        displayCurrentPage();
+    }
+}
+
+function inputPageKeyDown(event) {
+    if (event.key == 'Enter'){
+        htmlPageInput.blur();
+    }
+}
 
 //FLOW TEXT NAVIGATION
 
@@ -321,87 +464,4 @@ function buildRange(startOffset, endOffset, nodeData, nodeHTML, nodeTagName){
     range.setEnd(foundNode, endOffset);
     console.log(range)
     return range;
-}
-
-// PAGE NAVIGATION
-
-function displayCurrentPage(focusNewPage = true){
-    htmlPageView.innerHTML = pageReader.getCurrentPage();
-    let pageNumber = pageReader.getCurrentPageNbr();
-    setPageNumber(pageNumber, true);
-    const h1 = document.getElementById('newPage');
-    document.title = h1.innerText + " - " + pageReader.title;
-    if (focusNewPage){
-        //We need to use document.getElementById directly here
-        //since the h1 tag changes every time
-        //So a global const won't work
-        h1.focus();
-    }
-
-}
-
-function formatPagePlaceHoler(pageNbr) {
-    return `${pageNbr} (av ${pageReader.getNbrOfPages()})`;
-}
-
-function setPageNumber(pageNumber, saveInLocalStorage = false) {
-    htmlPageInput.value = "";
-    htmlPageInput.placeholder = formatPagePlaceHoler(pageNumber);
-
-    if (saveInLocalStorage) {
-        window.localStorage.setItem(fileName, "" + pageNumber);
-    }
-}
-
-function goBackToConversion() {
-    storedRange = null;
-    selection = null;
-    goToStart = false;
-    window.getSelection().removeAllRanges()
-    document.title = "Läs punktskrift direkt";
-    htmlConvertingText.style = "display:none";
-    htmlChosenFile.innerHTML = "- ingen fil vald";
-    toggleDiv(true);
-
-    // Must clear this if we go back and want to select the same file again.
-    htmlFileSelector.value = '';
-    pageReader.reset();
-};
-
-function nextPage() {
-    if (pageReader.pageForward()){
-        displayCurrentPage();
-    }
-
-}
-
-function previousPage() {
-    if (pageReader.pageBackward()){
-        displayCurrentPage();
-    }
-
-}
-
-function changeCurrentPage() {
-    let newPage = parseInt(htmlPageInput.value);
-    if (isNaN(newPage)){
-        newPage = parseInt(htmlPageInput.placeholder);
-    }
-    pageReader.setCurrentPage(newPage);
-    htmlPageView.innerHTML = pageReader.getCurrentPage();
-}
-
-function pageChangeFinished() {
-    if (htmlPageInput.value === ""){
-        displayCurrentPage(false);
-    }
-    else{
-        displayCurrentPage();
-    }
-}
-
-function inputPageKeyDown(event) {
-    if (event.key == 'Enter'){
-        htmlPageInput.blur();
-    }
 }

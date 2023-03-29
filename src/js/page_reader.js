@@ -82,14 +82,14 @@ class PageReader {
         let firstLine = '';
 
         if (this.maxPageNbr === 0){
-            firstLine += '<h1 tabindex=0 id = "newPage"> Inledande sidor ('
+            firstLine += '<h1 tabindex=-1 id = "newPage"> Inledande sidor ('
                         + (this.pages.length + 1) + ')</h1>';
         }
         else{
-            firstLine += '<h1 tabindex=0 id = "newPage"> Sidan ' + nbrDisplay + '</h1>';
+            firstLine += '<h1 tabindex=-1 id = "newPage"> Sidan ' + nbrDisplay + '</h1>';
         }
         //add to array
-        const fullPage = {text: firstLine + "<div class=\"text-container\">" + newPage + "</div>", pageNbr: this.maxPageNbr};
+        const fullPage = {text: firstLine + "<div id ='currentPage' tabindex=0 class=\"text-container\">" + newPage + "</div>", pageNbr: this.maxPageNbr};
         this.pages.push(fullPage);
 
     }
@@ -111,6 +111,9 @@ class PageReader {
         return this.pages[this.currentPageNbr].pageNbr;
     }
 
+    //Get next page number
+    //get previous page number
+
     recalibrate(){
         if (this.maxPageNbr === 0){
             this.maxPageNbr = this.pages.length-1;
@@ -118,6 +121,38 @@ class PageReader {
                 this.pages[i].pageNbr = i;
             }
         }
+    }
+
+    findPhrase(phrase){
+        let pageNbrs = []
+        let count = 0
+        this.pages.forEach(el => {
+            let pos = el.text.toLowerCase().indexOf(phrase.toLowerCase())
+            if (pos != -1) {
+                pageNbrs.push(el.pageNbr)
+            }
+            while (pos != -1){
+                count++
+                pos = el.text.toLowerCase().indexOf(phrase.toLowerCase(),pos+phrase.length)
+            }
+        });
+        return {total: count,  matches: pageNbrs};
+    }
+
+    highLightPhrases(pageNbr, phrase){
+        // does not  take into account inledande sidor yet
+        let page = this.pages[pageNbr].text
+        let pos = page.toLowerCase().indexOf(phrase.toLowerCase())
+        let text = page
+        while (pos != -1){
+            let spanBegin = "<span tabindex = 0 style='color:blue'>"
+            let posEnd = pos+phrase.length
+            text = page.substring(0, pos) + spanBegin + page.substring(pos,posEnd) + "<span>" + page.substring(posEnd)
+            pos = page.toLowerCase().indexOf(phrase.toLowerCase(),pos+posEnd)
+        }
+        console.log(text)
+        return text;
+       
     }
 
 }

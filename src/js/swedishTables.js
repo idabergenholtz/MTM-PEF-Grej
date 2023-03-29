@@ -10,6 +10,8 @@ export let spaces = ["⠀", " "]//OBSERVE, these are completely different in uni
 
 export let numberSign = '⠼'
 
+export let uppercaseEndSign = "⠱"
+
 export let numbersTable = [
     ["0","1","2","3","4","5","6","7","8","9"], 
     ["⠚","⠁","⠃","⠉","⠙","⠑","⠋","⠛","⠓","⠊"]
