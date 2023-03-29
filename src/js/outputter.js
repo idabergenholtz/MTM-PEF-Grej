@@ -131,15 +131,15 @@ class Outputter {
                 pageNbr = !isNaN(pageNbr) ? pageNbr : -1;
             }
 
-            if (row.toUpperCase().includes("INNEHÅLL")){
-                // console.log(row)
-                this.foundContents += 1;
-            }
+            // if (row.toUpperCase().includes("INNEHÅLL")){
+            //     // console.log(row)
+            //     this.foundContents += 1;
+            // }
 
 
-            if (this.foundContents == 1 && row.toUpperCase().includes("VOLYM")){
-                volymCounter++;
-            }
+            // if (this.foundContents == 1 && row.toUpperCase().includes("VOLYM")){
+            //     volymCounter++;
+            // }
 
             // page number row will not be added to normal page text
             // special page numbers like roman numerals will be added however
@@ -154,6 +154,7 @@ class Outputter {
                 newPage += outputFormatter.formatRowEnd();
             }
             else if (row_i !== 0) {
+           
                 //newPage += outputFormatter.formatRowStart();
                 let shouldDeleteSpaces = prevRowHadhypen;
                 let hyphenFound = hasHyphen(row);
@@ -174,37 +175,37 @@ class Outputter {
             }
         }
         // newPage += outputFormatter.formatPageEnd();
-        if (volymCounter > 0){
-            ///console.log(newPage)
-            pageRows = page.rows.entries();
-            let r = /\d+/g;
-            let contentArray = []
-            let str = ''
-            let nbr = -1
-            for (let [row_i, row] of pageRows) {
-                let matches = row.match(r)
-                str += row
-                if (matches){
-                    // let str = ""
-                    // matches.forEach(e => str += e + " ")
-                    // str += row + matches[matches.length -1]
-                    // console.log(str)
-                    let prevNbr = nbr
+        // if (volymCounter > 0){
+        //     ///console.log(newPage)
+        //     pageRows = page.rows.entries();
+        //     let r = /\d+/g;
+        //     let contentArray = []
+        //     let str = ''
+        //     let nbr = -1
+        //     for (let [row_i, row] of pageRows) {
+        //         let matches = row.match(r)
+        //         str += row
+        //         if (matches){
+        //             // let str = ""
+        //             // matches.forEach(e => str += e + " ")
+        //             // str += row + matches[matches.length -1]
+        //             // console.log(str)
+        //             let prevNbr = nbr
 
-                    let newNbr = matches[matches.length-1]
-                    if (newNbr >= prevNbr){
-                        nbr = newNbr
-                        contentArray.push(str)
-                        str = ''
-                    }
-                }
-            }
-            let ind = 0
-            contentArray.forEach(e => {
-                let out = "ROW " + ind + ": " + e
-                console.log(out)
-            });
-        }
+        //             let newNbr = matches[matches.length-1]
+        //             if (newNbr >= prevNbr){
+        //                 nbr = newNbr
+        //                 contentArray.push(str)
+        //                 str = ''
+        //             }
+        //         }
+        //     }
+        //     let ind = 0
+        //     contentArray.forEach(e => {
+        //         let out = "ROW " + ind + ": " + e
+        //         console.log(out)
+        //     });
+        // }
         return {page: newPage, pageNbr: pageNbr};
     }
 
