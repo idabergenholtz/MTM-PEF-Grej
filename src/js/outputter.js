@@ -103,6 +103,7 @@ class Outputter {
             for (let [section_i, section] of volume.sections.entries()) {
                 output += outputFormatter.formatSectionStart();
                 for (let [page_i, page] of section.pages.entries()) {
+
                     // output += '<span id = "checkpoint' + page_i + '" tabindex=0>';
                     /*output += '<span id="checkpoint_'+ page_i + '" class="checkpoint"'
                         + 'style="white-space:nowrap" tabindex=0></span>';*/
@@ -122,6 +123,7 @@ class Outputter {
                         });
                     }
                     // output += '</span>'
+
                 }
                 output += outputFormatter.formatSectionEnd();
             }
@@ -131,6 +133,9 @@ class Outputter {
         return output;
     }
     
+    static foundContents = 0;
+    static stopLooking = false
+    static contentPages = []
     /**
      * 
      * @param {*} page 
@@ -145,7 +150,9 @@ class Outputter {
         let prevRow = '';
         let prevRowHadhypen = false;
 
+
         let tableOfContentString = "";
+
 
         for (let [row_i, row] of pageRows) {
             if (row_i == 0){
@@ -153,6 +160,17 @@ class Outputter {
                 pageNbr = parseInt(str);
                 pageNbr = !isNaN(pageNbr) ? pageNbr : -1;
             }
+
+            // if (row.toUpperCase().includes("INNEHÅLL")){
+            //     // console.log(row)
+            //     this.foundContents += 1;
+            // }
+
+
+            // if (this.foundContents == 1 && row.toUpperCase().includes("VOLYM")){
+            //     volymCounter++;
+            // }
+
             // page number row will not be added to normal page text
             // special page numbers like roman numerals will be added however
             // as well as first rows not containing page numbers
@@ -167,6 +185,7 @@ class Outputter {
                 tableOfContentString += row.trim() + "\n";
             }
             else if (row_i !== 0) {
+           
                 //newPage += outputFormatter.formatRowStart();
                 let shouldDeleteSpaces = prevRowHadhypen;
                 let hyphenFound = hasHyphen(row);
@@ -187,6 +206,7 @@ class Outputter {
             }
         }
         // newPage += outputFormatter.formatPageEnd();
+
         if (notInlSid <= 0){
             // console.log(tableOfContentString)
             let tableOfContents = tableOfContent(tableOfContentString);
@@ -199,6 +219,7 @@ class Outputter {
             
 
         return {page: newPage, pageNbr: pageNbr, toc: null};
+
     }
 
     /*

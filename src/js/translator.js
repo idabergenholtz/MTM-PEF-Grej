@@ -119,6 +119,7 @@ function uppercase(braille, index) {
         string += alphabetTable[2][temp]
     }
     return string + "  "
+
 }
 
 function number(braille, index) {

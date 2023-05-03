@@ -28,7 +28,7 @@ const htmlConvertingText   = document.getElementById("convertingText");
 
 // html elements for choosing reading style
 const htmlConvertBtn = document.getElementById("convert-btn");
-const htmlFlowView = document.getElementById("flowText");
+const htmlFlowText = document.getElementById("flowText");
 
 // -- Attach callbacks -- //
 htmlFileSelector.addEventListener('input', selectFile);
@@ -46,6 +46,7 @@ htmlConvertBtn.addEventListener("click", convert);
 // -- Helper functions -- //
 
 function toggleDiv(toConvertDiv, pageByPage = true){
+
     // let convDiv = document.getElementById("convertDiv");
     // let readDiv = document.getElementById("readerDiv");
     // readDiv.style.display = toConvertDiv ? "none" : "block";
@@ -62,6 +63,7 @@ function toggleDiv(toConvertDiv, pageByPage = true){
     else{
         document.getElementById("flowDiv").style.display = "block";
     }
+    
 }
 
 function isPefFileType(fileType) {
@@ -115,11 +117,8 @@ function selectFile() {
 //previous name was convert()
 function saveInputText(reader, sizeKb) {
     readingFile = false;
-    //let inputText = reader.result;
     inputText = reader.result;
-    // controller.run(fileName, sizeKb, inputText);
-    // displayCurrentPage();
-    // toggleDiv(false);
+ 
 }
 
 function convert(){
@@ -139,45 +138,17 @@ function convert(){
         toggleDiv(false);
     }
     else{
-        //htmlFlowView.innerHTML = "<h1  tabindex=0> Trevlig läsning</h1>"
-        htmlFlowView.innerHTML = controller.run(fileName, 0, inputText, false);//--------------------------------------------------
+        let text = controller.run(fileName, 0, inputText, false);
+        //findContents(text)
+        
+        htmlFlowText.innerHTML = text
         toggleDiv(false, false);
-        // let scrollTo = parseInt(window.localStorage.getItem(fileName + "_flow"));
-        // window.location.hash = "jump_to_this_location";
-        /*
-        if (!isNaN(scrollTo)){
-            document.documentElement.scrollTop = scrollTo;        
-        }
-        let checkpoints = document.getElementsByClassName("checkpoint");
-        console.log("checkpoints length = " + checkpoints.length)
-        let smallestId = {id: '', pos: 1000000};
-        for (let i = 0; i < checkpoints.length; i++){
-            let checkpoint = checkpoints.item(i);
-            let pos = Math.abs(checkpoint.getBoundingClientRect().top);
-            if (pos < smallestId.pos){
-                smallestId = {id: checkpoint.id, pos: pos};
-            }
-        }
-        if (smallestId.id !== ''){
-            window.location.hash = smallestId.id;
-            let el = document.getElementById(smallestId.id);
-            el.innerText = "<<SPARAD POSITION>>"
-            document.getElementById(smallestId.id).focus();
-        }
-        */
     }
     inputText = '';
+    // findPhraseField.value="0";
+    // matches =[]
 }
 
-function downloadFile(filename, text) {
-    let downloadDummyElement = document.createElement('a');
-    downloadDummyElement.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-    downloadDummyElement.setAttribute('download', filename);
-    downloadDummyElement.style.display = 'none';
-    document.body.appendChild(downloadDummyElement);
-    downloadDummyElement.click();
-    document.body.removeChild(downloadDummyElement);
-}
 
 //FLOW TEXT NAVIGATION
 /*
@@ -244,7 +215,18 @@ function displayCurrentPage(focusNewPage = true){
         //We need to use document.getElementById directly here
         //since the h1 tag changes every time
         //So a global const won't work
-        h1.focus();
+        const daPage = document.getElementById('currentPage')
+        if (daPage != null) {
+           daPage.focus();
+           daPage.click(); 
+        }
+        else {
+            h1.focus()
+        }
+        
+    // daPage.addEventLi    stener("blur", (event) =>{
+        //     nextPage()
+        // });
     }
     else if (firstLine != null){
         firstLine.focus()
@@ -259,13 +241,18 @@ function formatPagePlaceHoler(pageNbr) {
 function setPageNumber(pageNumber, saveInLocalStorage = false) {
     htmlPageInput.value = "";
     htmlPageInput.placeholder = formatPagePlaceHoler(pageNumber);
-
+    // htmlNextPage.innerHTML = "Nästa sida (" + (pageNumber+1) + ")";
+    // htmlPreviousPage.innerHTML = "Föregående sida (" + (pageNumber-1) + ")";
     if (saveInLocalStorage) {
         window.localStorage.setItem(fileName, "" + pageNumber);
     }
 }
 
 function goBackToConversion() {
+    storedRange = null;
+    selection = null;
+    goToStart = false;
+    window.getSelection().removeAllRanges()
     document.title = "Läs punktskrift direkt";
     htmlConvertingText.style = "display:none";
     htmlChosenFile.innerHTML = "- ingen fil vald";
@@ -276,6 +263,57 @@ function goBackToConversion() {
     pageReader.reset();
 };
 
+
+let autoPageTurn = false
+const autoPageTurnBtn = document.getElementById("autoPageTurnBtn")
+autoPageTurnBtn.addEventListener("click", (e) =>{
+    autoPageTurn = !autoPageTurn
+    let label = autoPageTurn ? "(aktiverad)" : "(ej aktiverad)"
+    autoPageTurnBtn.innerHTML = "Automatiskt sidbyte " + label;
+    
+});
+
+htmlNextPage.addEventListener("focus", (e) =>{
+    if (autoPageTurn){
+        nextPage()
+    }
+    
+});
+
+//Phrase finding
+// const findPhraseField = document.getElementById("findPhrase")
+// findPhraseField.addEventListener("input", searchPhrase)
+// findPhraseField.addEventListener("keydown", event => goToMatch(event))
+// let matches = []
+// let total = 0
+// let phrase = ""
+// function searchPhrase(){
+//     phrase = findPhraseField.value
+//     if (phrase === ""){
+//         matches =[]
+//         total = 0
+//     }
+//     else {
+//         let finding = pageReader.findPhrase(phrase)
+//         matches = finding.matches
+//         total = finding.total
+        
+//     }
+    
+//     document.getElementById("nbrOfMatches").innerHTML = total
+
+// }
+// function goToMatch(event){
+//     if (event.key == "Enter") {
+//         let pNbr = matches[0]
+//         pageReader.setCurrentPage(pNbr);
+//         htmlPageView.innerHTML = pageReader.getCurrentPage();
+//         pageReader.highLightPhrases(pNbr,phrase)
+//         //displayCurrentPage()
+//     }
+    
+
+// }
 function nextPage() {
     if (pageReader.pageForward()){
         displayCurrentPage(false);
@@ -312,4 +350,174 @@ function inputPageKeyDown(event) {
     if (event.key == 'Enter'){
         htmlPageInput.blur();
     }
+}
+
+//FLOW TEXT NAVIGATION
+
+let storedRange = null;
+let selection = null;
+let goToStart = false
+ 
+
+document.getElementById("goToSavedPosition").addEventListener("click", (e) =>{
+    if (openFlowPos()) {
+        goToStart = false        
+        selection = window.getSelection()
+        htmlFlowText.focus()
+    }
+    else {
+        alert("Ingen sparad position hittades. Du tas till början av boken.")
+        goToBeginning()
+
+    }
+})
+
+document.getElementById("goToBeginning").addEventListener("click", goToBeginning)
+document.getElementById("backToConversion2").addEventListener("click", goBackToConversionFromFlow) 
+
+function goToBeginning() {
+    goToStart = true
+    selection = window.getSelection()
+    storedRange = null;
+    selection.removeAllRanges()
+    htmlFlowText.focus()
+}
+
+htmlFlowText.addEventListener("blur", function () {
+    // Store the cursor position in a variable when the user leaves the contenteditable div
+    goToStart = false
+    selection = window.getSelection()
+    storedRange = selection.getRangeAt(0).cloneRange();
+});
+
+
+htmlFlowText.addEventListener("focusin", function () {
+    // Restore the cursor position when the user reenters the contenteditable div
+    onFocus(goToStart)
+});
+
+function onFocus(goToBeginning = false){
+    if (goToBeginning){
+        return
+    }
+    selection = window.getSelection();
+    if (storedRange) {
+        selection.removeAllRanges();
+        selection.addRange(storedRange);
+    }
+    else {
+        openFlowPos()
+        selection = window.getSelection()
+        selection.removeAllRanges();
+        selection.addRange(storedRange);
+    }
+}
+
+htmlFlowText.addEventListener("keydown", function(event) {
+    // Prevent the default behavior for the keys that add or remove text
+    if (event.key === "Backspace" || event.key === "Delete" || event.key === "Insert" || event.key == "Enter") {
+        event.preventDefault();
+    }
+});
+
+htmlFlowText.addEventListener("beforeinput", function(event) {
+    if (event.inputType === "insertText" || event.inputType === "insertReplacementText" || event.inputType === "insertFromPaste") {
+        // Prevent the default behavior for the input
+        event.preventDefault();
+    }
+});
+
+
+
+window.onbeforeunload = function(){
+    saveFlowPos()
+ }
+
+ window.addEventListener("beforeunload", function(e){
+    saveFlowPos()
+ }, false);
+
+document.getElementById("savePos").addEventListener("click", saveFlowPos)
+
+function saveFlowPos(){
+    if (selection) {
+        //localStorage.setItem("sparadpos", selection.toString())
+        //console.log("sparade " +  selection.toString())
+        let range = storedRange;
+        let saveNode = range.startContainer;
+
+        let startOffset = range.startOffset;  // where the range starts
+        let endOffset = range.endOffset;      // where the range ends
+
+        let nodeData = saveNode.data;                       // the actual selected text
+        let nodeHTML = saveNode.parentElement.innerHTML;    // parent element innerHTML
+        let nodeTagName = saveNode.parentElement.tagName;   // parent element tag name
+        let rangeObj = {
+            sO : startOffset,
+            eO : endOffset,
+            nD : nodeData,
+            nH : nodeHTML,
+            nT: nodeTagName
+        }
+        localStorage.setItem("sparadpos"+fileName, JSON.stringify(rangeObj))
+        alert("Sparade läsposition")
+        console.log("sparade ")
+    }
+}
+
+function openFlowPos(){
+    let pos = localStorage.getItem("sparadpos"+fileName)
+    if (pos){
+        let r = JSON.parse(pos)
+        storedRange = buildRange(r.sO,r.eO,r.nD,r.nH,r.nT)
+        return true
+    }
+    return false
+}
+
+function goBackToConversionFromFlow() {
+    saveFlowPos()
+    storedRange = null;
+    selection = null;
+    goToStart = false;
+    window.getSelection().removeAllRanges()
+    document.title = "Läs punktskrift direkt";
+    htmlConvertingText.style = "display:none";
+    htmlChosenFile.innerHTML = "- ingen fil vald";
+    toggleDiv(true);
+
+    // Must clear this if we go back and want to select the same file again.
+    htmlFileSelector.value = '';
+    pageReader.reset();
+};
+
+
+// This code is from adrianmc at the following link
+// https://stackoverflow.com/questions/23479533/how-can-i-save-a-range-object-from-getselection-so-that-i-can-reproduce-it-on
+function buildRange(startOffset, endOffset, nodeData, nodeHTML, nodeTagName){
+    let cDoc = document.getElementById("flowText")
+    let tagList = cDoc.getElementsByTagName(nodeTagName);
+    
+    // find the parent element with the same innerHTML
+    for (let i = 0; i < tagList.length; i++) {
+        if (tagList[i].innerHTML == nodeHTML) {
+            var foundEle = tagList[i];
+        }
+    }
+
+    // find the node within the element by comparing node data
+    let nodeList = foundEle.childNodes;
+    for (let i = 0; i < nodeList.length; i++) {
+        if (nodeList[i].data == nodeData) {
+            var foundNode = nodeList[i];
+        }
+    }
+
+    // create the range
+    let range = document.createRange();
+
+    range.setStart(foundNode, startOffset);
+    range.setEnd(foundNode, endOffset);
+    console.log(range)
+    return range;
 }

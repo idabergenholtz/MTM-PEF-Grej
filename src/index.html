@@ -11,8 +11,9 @@
 </head>
 <body>
     <div id ="convertDiv">
-        <h1>Läs punktskrift direkt</h1>
-        <p>
+
+        <!--<h1>PUNKT ONLINE</h1>(DOT ON LINE MATH JOKE)/LEGIMUS PUNKT/PUNKTERA MERA/TRYCKT PUNKT ONLINE-->
+        <h1>Läs punktskrift direkt</h1> <p>
             När du har laddat ner en punktskriftsbok från Legimus 
             kan du läsa den här med din punktdisplay.</p>
         
@@ -34,8 +35,10 @@
         <label for="oneFlow">Löpande text</label> <br>
         <iframe id="download_frame" style="display:none;"></iframe>
         <br>
+
         <button id = "instruction">Info skärmläsare</button>
         <br>
+
         <button id="convert-btn">Läs boken</button>
         
         <h3 id="convertingText" style="display:none">Konverterar ...</h3>
@@ -44,6 +47,7 @@
 
     <div id = "readerDiv" style="display:none">
         <!--<h1 tabindex=-1 id = "newPage"> Ny sida </h1>-->
+
         <div id = "text" class="bookText" role="page text content"><h1 tabindex=-1 id = "newPage"> Sidnavigering </h1></div>
         <br>
         <div class="buttonPanel" role="navigation">
@@ -57,9 +61,10 @@
             <button id = "backToConversion" >
                 Till startsida
             </button>
+            
         </div>
     </div>
-
+    
     <div id = "flowDiv" style="display:none">
         <div id ="metaDataPage" role = "about the book (metadata)"></div>
         <div id = "flowMenu" role="navigation" style = "background-color: var(--main-colour);">
@@ -77,8 +82,9 @@
             </div>
         </div>
         <div id = "flowText" class="text-container" role="book text content" ></div>
-    </div>
 
+    </div>
+    
 
     <script src="js/index.js" type="module"></script>
 

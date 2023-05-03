@@ -40,6 +40,7 @@ class Controller {
         console.log('Giving file to parser');
         let pefTree = receiveFile(inputText)
         let metaData = pefTree.head.meta;
+        
         console.log(`Received pef tree from parser: ${metaData.title}`);
         console.log(`Entire meta data: `);
         console.log(metaData);
@@ -47,16 +48,11 @@ class Controller {
         console.log(pefTree);
 
         console.log('Translating all rows from braille to clear text');
-
-        for (let volume of pefTree.body.volumes) {
-            for (let section of volume.sections) {
-                for (let page of section.pages) {
-                    for(let i = 0; i < page.rows.length; i++) {
-                        page.rows[i] = translateToSwedish(page.rows[i])
-                    }
-                }
-            }
+        if (metaData.language == "sv"){
+            console.log("Worked")
+            this.translateToSwedish(pefTree);
         }
+        
         console.log('Done translating braille to clear text');
 
         //Removing front page, can be extended to include more changes to the translated pefObject.
@@ -72,8 +68,10 @@ class Controller {
 
         if (!byPage) {
             console.log('Giving pef tree with clear text to outputter');
+
             document.getElementById("metaDataPage").innerHTML = firstPage;
             let output = Outputter.format(pefTree, outputFileFormat);
+
             console.log('Outputter complete');
             return output;
         }
@@ -83,7 +81,6 @@ class Controller {
             console.log(`Finished, downloading file: ${outputFileName}`);
             download(outputFileName, output);
         }
-
         if (byPage) {
             addPages(pefTree, outputFileFormat, this.pageReader);
             this.pageReader.addFirstPage(firstPage);
@@ -99,6 +96,18 @@ class Controller {
             this.pageReader.setCurrentPage(parseInt(lastPage));
         }
 
+    }
+
+    translateToSwedish(pefTree) {
+        for (let volume of pefTree.body.volumes) {
+            for (let section of volume.sections) {
+                for (let page of section.pages) {
+                    for (let i = 0; i < page.rows.length; i++) {
+                        page.rows[i] = translateToSwedish(page.rows[i]);
+                    }
+                }
+            }
+        }
     }
 }
 
