@@ -120,7 +120,6 @@ function uppercase(braille, index) {
     }
     return string + "  "
 
-    
 }
 
 function number(braille, index) {

@@ -68,8 +68,10 @@ class Controller {
 
         if (!byPage) {
             console.log('Giving pef tree with clear text to outputter');
-            document.getElementById("firstPage").innerHTML = firstPage;
-            let output =  Outputter.format(pefTree, outputFileFormat);
+
+            document.getElementById("metaDataPage").innerHTML = firstPage;
+            let output = Outputter.format(pefTree, outputFileFormat);
+
             console.log('Outputter complete');
             return output;
         }

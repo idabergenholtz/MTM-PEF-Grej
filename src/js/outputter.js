@@ -39,7 +39,7 @@ class OutputFormatterHtml extends OutputFormatter {
     static formatFirstPageTitleStart()     { return '<h1 tabindex=0 id="newPage" class="first-page-title">'; }
     static formatFirstPageAuthorStart()    { return '<h4 class="first-page-author">'; }
     static formatFirstPageDateStart()      { return '<h6 class="first-page-date">'; }
-    static firstPageMetaDataTableStart()   { return '<table>'; }
+    static firstPageMetaDataTableStart()   { return '<table lang="en-GB">'; }
     static formatFirstPageMetaKeyStart()   { return '<tr><td>'; }
     static formatFirstPageMetaValueStart() { return '<td>'; }
 
@@ -52,9 +52,9 @@ class OutputFormatterHtml extends OutputFormatter {
 
     // Normal content
     static formatBodyStart()               { return '<div class="body">'; }
-    static formatVolumeStart()             { return '<div class="volume">'; }
+    static formatVolumeStart(id)           { return '<div class="volume" id ="vol'+id+'" tabindex = -1'; }
     static formatSectionStart()            { return '<div class="section">'; }
-    static formatPageStart()               { return '<div class="page">'; }
+    static formatPageStart()               { return '<div id = "bookPage" class="page">'; }
     static formatRowStart()                { return '<p>'; }
 
     static formatBodyEnd()                 { return '</div>'; }
@@ -90,12 +90,40 @@ class Outputter {
     static format(pefObject, outputFormat) {
         let outputFormatter = Outputter.getOutputFormatter(outputFormat);
         let output = '';
+
+        let pNbr = 0
         for (let [volumes_i, volume] of pefObject.body.volumes.entries()) {
-            output += outputFormatter.formatVolumeStart();
+            output += outputFormatter.formatVolumeStart(volumes_i);
+            let select = document.getElementById("volumejumper")
+            let option = document.createElement("option")
+            option.text = "" + (volumes_i+1);
+            option.value = "vol"+volumes_i;
+            select.appendChild(option)
+            
             for (let [section_i, section] of volume.sections.entries()) {
                 output += outputFormatter.formatSectionStart();
                 for (let [page_i, page] of section.pages.entries()) {
-                    output += this.formatPage(page, outputFormatter).page;
+
+                    // output += '<span id = "checkpoint' + page_i + '" tabindex=0>';
+                    /*output += '<span id="checkpoint_'+ page_i + '" class="checkpoint"'
+                        + 'style="white-space:nowrap" tabindex=0></span>';*/
+                    let p = this.formatPage(page, outputFormatter, pNbr)
+                    pNbr += p.pageNbr > 0 ? 1 : 0;
+                    output += p.pageNbr > 0 ? "<span tabindex = -1 id ='page"+ pNbr +"' " : "<span>"
+                    output += p.page;
+                    output += "</span>"
+
+                    if (p.toc != null){
+                        let tocSel = document.getElementById("toc")
+                        p.toc.forEach((e) => {
+                            let tocOption = document.createElement("option")
+                            tocOption.text = e.title
+                            tocOption.value = "page"+e.paNbr;
+                            tocSel.appendChild(tocOption)
+                        });
+                    }
+                    // output += '</span>'
+
                 }
                 output += outputFormatter.formatSectionEnd();
             }
@@ -114,7 +142,7 @@ class Outputter {
      * @param {*} outputFormatter 
      * @returns object with page text and page nbr
      */
-    static formatPage(page, outputFormatter) {
+    static formatPage(page, outputFormatter, notInlSid) {
         let newPage = ''
         // newPage += outputFormatter.formatPageStart();
         let pageRows = page.rows.entries();
@@ -122,7 +150,9 @@ class Outputter {
         let prevRow = '';
         let prevRowHadhypen = false;
 
-        let volymCounter = 0
+
+        let tableOfContentString = "";
+
 
         for (let [row_i, row] of pageRows) {
             if (row_i == 0){
@@ -152,6 +182,7 @@ class Outputter {
                 newPage += outputFormatter.formatRowStart();
                 newPage += row;
                 newPage += outputFormatter.formatRowEnd();
+                tableOfContentString += row.trim() + "\n";
             }
             else if (row_i !== 0) {
            
@@ -175,38 +206,20 @@ class Outputter {
             }
         }
         // newPage += outputFormatter.formatPageEnd();
-        // if (volymCounter > 0){
-        //     ///console.log(newPage)
-        //     pageRows = page.rows.entries();
-        //     let r = /\d+/g;
-        //     let contentArray = []
-        //     let str = ''
-        //     let nbr = -1
-        //     for (let [row_i, row] of pageRows) {
-        //         let matches = row.match(r)
-        //         str += row
-        //         if (matches){
-        //             // let str = ""
-        //             // matches.forEach(e => str += e + " ")
-        //             // str += row + matches[matches.length -1]
-        //             // console.log(str)
-        //             let prevNbr = nbr
 
-        //             let newNbr = matches[matches.length-1]
-        //             if (newNbr >= prevNbr){
-        //                 nbr = newNbr
-        //                 contentArray.push(str)
-        //                 str = ''
-        //             }
-        //         }
-        //     }
-        //     let ind = 0
-        //     contentArray.forEach(e => {
-        //         let out = "ROW " + ind + ": " + e
-        //         console.log(out)
-        //     });
-        // }
-        return {page: newPage, pageNbr: pageNbr};
+        if (notInlSid <= 0){
+            // console.log(tableOfContentString)
+            let tableOfContents = tableOfContent(tableOfContentString);
+            // tableOfContents.forEach((title,paNbr) => {
+            //     console.log(title)
+            //     console.log(paNbr)
+            // });
+            return {page: newPage, pageNbr: pageNbr, toc: tableOfContents};
+        }
+            
+
+        return {page: newPage, pageNbr: pageNbr, toc: null};
+
     }
 
     /*
@@ -277,6 +290,34 @@ class Outputter {
 }
 
 //helper functions
+
+function tableOfContent(str) {
+    const toc = str;
+    const pattern = /\d+$/gm;
+    
+    let chapters = [];
+    
+    let match;
+
+    let prevInd = 0
+    while ((match = pattern.exec(toc)) !== null) {
+        //console.log(match)
+        let text = toc.substring(prevInd, match.index)
+        prevInd = match.index + match[0].length
+        //console.log(text)
+        //console.log(parseInt(match[0]))
+        
+        chapters.push({title: text, paNbr: parseInt(match[0])})
+
+    //   const title = match[1].trim();
+    //   const endPage = parseInt(match[2]);
+    //   chapters.push({ title, endPage });
+    }
+    return chapters;
+    // console.log(chapters);
+    
+    
+}
 function hasHyphen(str){
     let index = str.length-1;
     let letter = str.charAt(index);
