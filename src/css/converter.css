@@ -7,11 +7,3 @@
     font-size: 1rem;
 }
 
-h2 {
-    width: 100vw;
-    background-color: var(--main-colour);
-    color: white;
-    margin: 0;
-    line-height: calc(var(--default-spacing) * 8);
-    height: calc(var(--default-spacing) * 8);
-}

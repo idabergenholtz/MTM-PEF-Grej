@@ -28,15 +28,13 @@
         <div id = "text"></div>
         Need to download stuff -->
                 
-        <h3> Vill du läsa boken sida för sida eller som löpande text?</h3>
+        <h2> Vill du läsa boken sida för sida eller som löpande text?</h2>
         <input type="radio" id="byPage" name="howToRead" value="BYPAGE"> 
         <label for="byPage">Sida för sida</label>
         <input type="radio" id="oneFlow" name="howToRead" value="ONEFLOW"> 
         <label for="oneFlow">Löpande text</label> <br>
         <iframe id="download_frame" style="display:none;"></iframe>
-        <br>
-
-        <button id = "instruction">Info skärmläsare</button>
+        
         <br>
 
         <button id="convert-btn">Läs boken</button>
@@ -48,7 +46,7 @@
     <div id = "readerDiv" style="display:none">
         <!--<h1 tabindex=-1 id = "newPage"> Ny sida </h1>-->
 
-        <div id = "text" class="bookText" role="page text content"><h1 tabindex=-1 id = "newPage"> Sidnavigering </h1></div>
+        <div id = "text" class="bookText" role="page text content"></div>
         <br>
         <div class="buttonPanel" role="navigation">
             <button id = "nextPage">Nästa sida</button>
@@ -56,7 +54,7 @@
             <button id = "previousPage">Föregående sida</button>
             <br>
             <label for = "goToPage">Hoppa till sida: </label>
-            <input id = "goToPage" type="text" role="page jump" placeHolder="Gå till sida: ">
+            <input id = "goToPage" type="text"  placeHolder="Gå till sida: ">
             <br>
             <button id = "backToConversion" >
                 Till startsida
@@ -66,20 +64,23 @@
     </div>
     
     <div id = "flowDiv" style="display:none">
-        <div id ="metaDataPage" role = "about the book (metadata)"></div>
-        <div id = "flowMenu" role="navigation" style = "background-color: var(--main-colour);">
-            <div class = "buttonPanel">
-            <label for = "volumejumper" style = "color: white">Hoppa till volym: </label>
-            <select id = "volumejumper" class = "inverseColorBtn">
-            </select>  
-            <button id = "volumeInfo" class = "inverseColorBtn">Info volymer</button>
-            
-            <label for = "toc" style = "color: white">Innehållsförteckning: </label>
-            <select id = "toc" class = "inverseColorBtn">
-            </select> 
+        <div id ="metaDataPage" ></div>
+        <div id = "flowMenu" role="navigation" style = "background-color: var(--main-colour); ">
+                <button id = "instruction" class = "inverseColorBtn">Info skärmläsare</button>
+                <label for = "toc" style = "color: white">Innehållsförteckning: </label>
+                <select id = "toc" class = "inverseColorBtn">
+                </select> 
+                <button id ="tocClick" class = "inverseColorBtn">Hoppa till valt kapitel</button>
+                
+                <label for = "volumejumper" style = "color: white">Volymer: </label>
+                <select id = "volumejumper" class = "inverseColorBtn">
+                </select>  
+                <button id ="volClick" class = "inverseColorBtn">Hoppa till vald volym</button>
+                
+                <button id = "volumeInfo" class = "inverseColorBtn">Info volymer</button>
+                
 
-            <button id = "backFromFlow" class = "inverseColorBtn">Till startsida</button>
-            </div>
+                <button id = "backFromFlow" class = "inverseColorBtn">Till startsida</button>
         </div>
         <div id = "flowText" class="text-container" role="book text content" ></div>
 
