@@ -1,4 +1,4 @@
-import {alphabetTable, uppercaseSign, numbersTable, numberSign, spaces, doubleCharTable, singleCharTable, oneCharIgnoreTable, twoCharIgnoreTable} from "./swedishTables.js"
+import {alphabetTable, uppercaseSign, numbersTable, numberSign,uppercaseEndSign, spaces, doubleCharTable, singleCharTable, oneCharIgnoreTable, twoCharIgnoreTable} from "./swedishTables.js"
 
 //https://www.mtm.se/globalassets/punktskriftsnamnden/svenska_skrivregler_for_punktskrift.pdf
 
@@ -90,12 +90,35 @@ function uppercase(braille, index) {
     }
 
     //The whole word, until the next non alphabetic character, should be upper case
-    for(let i = index + 2; i < braille.length; i++) {
-        let temp = findInTable(braille.charAt(i), alphabetTable[1])
-        if(temp <= -1) break
+    if (braille.charAt(index+2)!== uppercaseSign) {
+        for(let i = index + 2; i < braille.length; i++) {
+            let temp = findInTable(braille.charAt(i), alphabetTable[1])
+            if(temp <= -1) break
+            string += alphabetTable[2][temp]
+        }
+        return string
+    }
+
+    //The whole sentence, until ⠱/uppercaseEndSign should be upper case
+    for(let i = index + 3; i < braille.length; i++) {
+        let daChar = braille.charAt(i)
+        if (daChar == uppercaseEndSign) {
+            break;
+        }
+
+        //check if space
+        let isSpace = daChar == spaces[0]
+        if (isSpace){
+            string += spaces[1]
+            continue 
+        }
+        //find letter
+        let temp = findInTable(daChar, alphabetTable[1])
+
+        // if(temp == uppercaseEndSign) break
         string += alphabetTable[2][temp]
     }
-    return string
+    return string + "  "
 }
 
 function number(braille, index) {

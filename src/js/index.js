@@ -185,7 +185,53 @@ window.addEventListener("beforeunload", (event) => {
     window.localStorage.setItem(fileName + "_flow", document.documentElement.scrollTop);
 })
 */
-// PAGE NAVIGATION
+document.getElementById("instruction").addEventListener("click", (e) => {
+alert("Sätta platsmärke \n\n"+
+        "Om du väljer alternativet för att läsa boken löpande sparas inte din läsposition" + 
+    " när du lämnar/uppdaterar sidan. Används däremot JAWS som skärmläsare går det att sätta platsmärke genom " +
+    '"Shift+Control+K". Du får upp en dialog där du kan välja platsmärke att gå till, redigera '
+    +"platsmärken eller lägga till nya platsmärken. För att hoppa mellan platsmärken använd "
+    + '”K”. På detta sätt kan du ändå komma tillbaka till var du har varit ifall du behöver lämna boken.');
+});
+
+document.getElementById("backFromFlow").addEventListener("click",goBackToConversion);
+
+document.getElementById("volumejumper").addEventListener("change", (e) => {
+    let option = document.getElementById("volumejumper").value
+    if (option != "title"){
+        document.getElementById(option).focus()
+    }
+});
+
+document.getElementById("volumeInfo").addEventListener("click", (e) => {
+    alert("Varför volymer \n\n" + 
+        "Dessa digitala punktskriftsböcker bygger på samma filer som används " +
+        "för att trycka punktskriftsböcker i pappersformat. Varje volym motsvarar en fysisk ihoplimmad bok.\n\n" +
+        "Eftersom filerna (PEF) inte innehåller någon strukturinformation för kapitel eller innehålls" +
+        "förteckning, vill vi i alla fall erbjuda möjligheten att hoppa mellan volymer. \n\n" +
+        "TIPS\n\n" +
+        "Testa att använda ordsök (control+f för Windows eller cmd+f för Mac) för att leta efter kapitelrubriker.");
+});
+
+
+document.getElementById("toc").addEventListener("change", (e) => {
+    let s = document.getElementById("toc")
+    if (s != null){
+        let div = document.getElementById(s.value)
+        if (div == null) {
+            alert("Det gick inte att gå till " + s.options[s.selectedIndex].text + ". Tekniken för att hitta innehållsförteckning i våra " + 
+                "punktskriftsböcker bygger på att leta efter rader som slutar med siffror i bokens inledande sidor. Dessa tolkas som sidnummer. "+
+                "Tyvärr kan det bli fel ibland som när en rad slutar med ett årtal. Vi ber om ursäkt för förvirringen.");
+        }
+        else {
+            let forts = window.confirm("Vill du gå vidare till " + s.options[s.selectedIndex].text + "?");
+            if (forts){
+                div.focus()
+            }        
+        }
+    }
+});
+//PAGE BY PAGE 
 
 function displayCurrentPage(focusNewPage = true){
     htmlPageView.innerHTML = pageReader.getCurrentPage();
@@ -193,17 +239,21 @@ function displayCurrentPage(focusNewPage = true){
     setPageNumber(pageNumber, true);
     const h1 = document.getElementById('newPage');
     document.title = h1.innerText + " - " + pageReader.title;
+    const firstLine = document.getElementById('bookPage');
     if (focusNewPage){
         //We need to use document.getElementById directly here
         //since the h1 tag changes every time
         //So a global const won't work
         h1.focus();
     }
+    else if (firstLine != null){
+        firstLine.focus()
+    }
 
 }
 
 function formatPagePlaceHoler(pageNbr) {
-    return `${pageNbr} (av ${pageReader.getNbrOfPages()})`;
+    return `Sida ${pageNbr} (av ${pageReader.getNbrOfPages()})`;
 }
 
 function setPageNumber(pageNumber, saveInLocalStorage = false) {
@@ -228,7 +278,7 @@ function goBackToConversion() {
 
 function nextPage() {
     if (pageReader.pageForward()){
-        displayCurrentPage();
+        displayCurrentPage(false);
     }
 
 }

@@ -11,9 +11,12 @@
 </head>
 <body>
     <div id ="convertDiv">
-        <h1>Läs punktskrift direkt</h1> <p>
+        <h1>Läs punktskrift direkt</h1>
+        <p>
             När du har laddat ner en punktskriftsbok från Legimus 
             kan du läsa den här med din punktdisplay.</p>
+        
+    
         <input id="file-selector" type="file" accept=".pef" style="display:none">
         <button id="file-select-btn" onclick= "document.getElementById('file-selector').click()">
             Välj fil (.pef)
@@ -23,14 +26,15 @@
         <!--<h3 id="convertPer"></h3>
         <div id = "text"></div>
         Need to download stuff -->
-
-        
+                
         <h3> Vill du läsa boken sida för sida eller som löpande text?</h3>
         <input type="radio" id="byPage" name="howToRead" value="BYPAGE"> 
         <label for="byPage">Sida för sida</label>
         <input type="radio" id="oneFlow" name="howToRead" value="ONEFLOW"> 
         <label for="oneFlow">Löpande text</label> <br>
         <iframe id="download_frame" style="display:none;"></iframe>
+        <br>
+        <button id = "instruction">Info skärmläsare</button>
         <br>
         <button id="convert-btn">Läs boken</button>
         
@@ -40,23 +44,39 @@
 
     <div id = "readerDiv" style="display:none">
         <!--<h1 tabindex=-1 id = "newPage"> Ny sida </h1>-->
-        <div id = "text" class="bookText"><h1 tabindex=-1 id = "newPage"> Sidnavigering </h1></div>
+        <div id = "text" class="bookText" role="page text content"><h1 tabindex=-1 id = "newPage"> Sidnavigering </h1></div>
         <br>
-        <div class="buttonPanel">
+        <div class="buttonPanel" role="navigation">
             <button id = "nextPage">Nästa sida</button>
             <br>
             <button id = "previousPage">Föregående sida</button>
             <br>
-            Gå till sida: <input id = "goToPage" type="text" placeHolder="1">
+            <label for = "goToPage">Hoppa till sida: </label>
+            <input id = "goToPage" type="text" role="page jump" placeHolder="Gå till sida: ">
             <br>
             <button id = "backToConversion" >
-                Tillbaka till konvertering
+                Till startsida
             </button>
         </div>
     </div>
 
     <div id = "flowDiv" style="display:none">
-        <div id = "flowText" class="bookText"></div>
+        <div id ="metaDataPage" role = "about the book (metadata)"></div>
+        <div id = "flowMenu" role="navigation" style = "background-color: var(--main-colour);">
+            <div class = "buttonPanel">
+            <label for = "volumejumper" style = "color: white">Hoppa till volym: </label>
+            <select id = "volumejumper" class = "inverseColorBtn">
+            </select>  
+            <button id = "volumeInfo" class = "inverseColorBtn">Info volymer</button>
+            
+            <label for = "toc" style = "color: white">Innehållsförteckning: </label>
+            <select id = "toc" class = "inverseColorBtn">
+            </select> 
+
+            <button id = "backFromFlow" class = "inverseColorBtn">Till startsida</button>
+            </div>
+        </div>
+        <div id = "flowText" class="text-container" role="book text content" ></div>
     </div>
 
 
