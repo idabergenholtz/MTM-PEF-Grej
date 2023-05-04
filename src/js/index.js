@@ -230,9 +230,7 @@ function displayCurrentPage(focusNewPage = true){
         //     nextPage()
         // });
     }
-    else if (firstLine != null){
-        firstLine.focus()
-    }
+   
 
 }
 
