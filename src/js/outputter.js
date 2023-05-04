@@ -309,9 +309,9 @@ function tableOfContent(str) {
         while (text.includes('.')){
             text = text.replace('.', '')
         }
-        if (!text.toUpperCase().includes("VOLYM")){
+        // if (!text.toUpperCase().includes("VOLYM")){
             chapters.push({title: text, paNbr: parseInt(match[0])})
-        }
+        // }
     //   const title = match[1].trim();
     //   const endPage = parseInt(match[2]);
     //   chapters.push({ title, endPage });
