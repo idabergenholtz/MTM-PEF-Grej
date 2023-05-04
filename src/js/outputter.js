@@ -306,17 +306,18 @@ function tableOfContent(str) {
         prevInd = match.index + match[0].length
         //console.log(text)
         //console.log(parseInt(match[0]))
-        
-        chapters.push({title: text, paNbr: parseInt(match[0])})
-
+        while (text.includes('.')){
+            text = text.replace('.', '')
+        }
+        if (!text.toUpperCase().includes("VOLYM")){
+            chapters.push({title: text, paNbr: parseInt(match[0])})
+        }
     //   const title = match[1].trim();
     //   const endPage = parseInt(match[2]);
     //   chapters.push({ title, endPage });
     }
     return chapters;
     // console.log(chapters);
-    
-    
 }
 function hasHyphen(str){
     let index = str.length-1;
