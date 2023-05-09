@@ -1,5 +1,10 @@
 #convertDiv {
-    text-align: center;
+    width: 800px;
+    max-width: 90%;
+    margin: auto;
+    padding: 20px;
+    line-height: 150%;    
+    text-align: left; 
 }
 
 #chosenFile {

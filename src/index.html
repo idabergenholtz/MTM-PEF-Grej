@@ -10,25 +10,29 @@
     <link rel="stylesheet" type="text/css" href="css/reader.css">
 </head>
 <body>
+    <h1>Läs punktskrift direkt</h1> 
     <div id ="convertDiv">
 
         <!--<h1>PUNKT ONLINE</h1>(DOT ON LINE MATH JOKE)/LEGIMUS PUNKT/PUNKTERA MERA/TRYCKT PUNKT ONLINE-->
-        <h1>Läs punktskrift direkt</h1> <p>
+        <p>
             När du har laddat ner en punktskriftsbok från Legimus 
             kan du läsa den här med din punktdisplay.</p>
         
+        <h2>Ladda upp filen</h2>
     
         <input id="file-selector" type="file" accept=".pef" style="display:none">
         <button id="file-select-btn" onclick= "document.getElementById('file-selector').click()">
             Välj fil (.pef)
         </button>
-        <div id ="chosenFile">- ingen fil vald</div>
+        <br>
+        <label for="chosenFile" style = "font-weight: bold;">Vald fil:</label>
+        <span id ="chosenFile"> ingen fil vald</span>
         <!--<button id="converter-button">Konvertera</button>-->
         <!--<h3 id="convertPer"></h3>
         <div id = "text"></div>
         Need to download stuff -->
                 
-        <h2> Vill du läsa boken sida för sida eller som löpande text?</h2>
+        <h2>Hur vill du läsa boken?</h2>
         <input type="radio" id="byPage" name="howToRead" value="BYPAGE"> 
         <label for="byPage">Sida för sida</label>
         <input type="radio" id="oneFlow" name="howToRead" value="ONEFLOW"> 

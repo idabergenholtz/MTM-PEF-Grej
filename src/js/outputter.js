@@ -109,7 +109,7 @@ class Outputter {
                         + 'style="white-space:nowrap" tabindex=0></span>';*/
                     let p = this.formatPage(page, outputFormatter, pNbr)
                     pNbr += p.pageNbr > 0 ? 1 : 0;
-                    output += p.pageNbr > 0 ? "<span tabindex = -1 id ='page"+ pNbr +"' " : "<span>"
+                    output += p.pageNbr > 0 ? "<span tabindex = -1 id ='page"+ pNbr +"' >" : "<span>"
                     output += p.page;
                     output += "</span>"
 
