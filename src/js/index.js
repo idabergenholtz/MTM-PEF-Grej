@@ -54,10 +54,12 @@ function toggleDiv(toConvertDiv, pageByPage = true){
     
     document.getElementById("convertDiv").style.display = toConvertDiv ? "block" : "none";
     if (toConvertDiv){
+
         document.getElementById("readerDiv").style.display = "none";
         document.getElementById("flowDiv").style.display = "none";
     }
     else if (pageByPage){
+        
         document.getElementById("readerDiv").style.display = "block";
     }
     else{
@@ -156,6 +158,7 @@ window.addEventListener("beforeunload", (event) => {
     window.localStorage.setItem(fileName + "_flow", document.documentElement.scrollTop);
 })
 */
+/*
 document.getElementById("instruction").addEventListener("click", (e) => {
 alert("Sätta platsmärke \n\n"+
         "Om du väljer alternativet för att läsa boken löpande sparas inte din läsposition" + 
@@ -164,7 +167,7 @@ alert("Sätta platsmärke \n\n"+
     +"platsmärken eller lägga till nya platsmärken. För att hoppa mellan platsmärken använd "
     + '”K”. På detta sätt kan du ändå komma tillbaka till var du har varit ifall du behöver lämna boken.');
 });
-
+*/
 document.getElementById("backFromFlow").addEventListener("click",goBackToConversion);
 
 document.getElementById("volClick").addEventListener("click", (e) => {
@@ -176,7 +179,13 @@ document.getElementById("volClick").addEventListener("click", (e) => {
 });
 
 document.getElementById("volumeInfo").addEventListener("click", (e) => {
-    alert("Varför volymer \n\n" + 
+    alert("Sätta platsmärke \n\n"+
+            "I alternativet för att läsa boken löpande sparas inte din läsposition" + 
+        " när du lämnar/uppdaterar sidan. Används däremot JAWS som skärmläsare går det att sätta platsmärke genom " +
+        '"Shift+Control+K". Du får upp en dialog där du kan välja platsmärke att gå till, redigera '
+        +"platsmärken eller lägga till nya platsmärken. För att hoppa mellan platsmärken använd "
+        + '”K”. På detta sätt kan du ändå komma tillbaka till var du har varit ifall du behöver lämna boken.\n\n'+
+        "Varför volymer \n\n" + 
         "Dessa digitala punktskriftsböcker bygger på samma filer som används " +
         "för att trycka punktskriftsböcker i pappersformat. Varje volym motsvarar en fysisk ihoplimmad bok."+
         "\n\n" /* +
@@ -206,21 +215,26 @@ document.getElementById("tocClick").addEventListener("click", (e) => {
 });
 //PAGE BY PAGE 
 
-function displayCurrentPage(focusNewPage = true){
+function displayCurrentPage(focusNewPage = true, focusH1 = false){
     htmlPageView.innerHTML = pageReader.getCurrentPage();
     let pageNumber = pageReader.getCurrentPageNbr();
     setPageNumber(pageNumber, true);
     const h1 = document.getElementById('newPage');
     document.title = h1.innerText + " - " + pageReader.title;
     const firstLine = document.getElementById('bookPage');
+    
     if (focusNewPage){
         //We need to use document.getElementById directly here
         //since the h1 tag changes every time
         //So a global const won't work
-        const daPage = document.getElementById('currentPage')
-        if (daPage != null) {
-           daPage.focus();
-           daPage.click(); 
+        // const daPage = document.getElementById('currentPage')
+        if (focusH1){
+            h1.focus()
+            return;
+        }
+        if (firstLine != null) {
+           firstLine.focus() 
+            // h1.focus()
         }
         else {
             h1.focus()
@@ -266,7 +280,7 @@ function goBackToConversion() {
 
 function nextPage() {
     if (pageReader.pageForward()){
-        displayCurrentPage(false);
+        displayCurrentPage();
     }
 
 }
@@ -292,7 +306,7 @@ function pageChangeFinished() {
         displayCurrentPage(false);
     }
     else{
-        displayCurrentPage();
+        displayCurrentPage(true, true);
     }
 }
 
