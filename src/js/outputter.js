@@ -306,11 +306,17 @@ function tableOfContent(str) {
         prevInd = match.index + match[0].length
         //console.log(text)
         //console.log(parseInt(match[0]))
+        let dotIncluded= false;
         while (text.includes('.')){
+            dotIncluded = true;
             text = text.replace('.', '')
         }
         // if (!text.toUpperCase().includes("VOLYM")){
+        if (dotIncluded){
             chapters.push({title: text, paNbr: parseInt(match[0])})
+
+
+        }
         // }
     //   const title = match[1].trim();
     //   const endPage = parseInt(match[2]);
