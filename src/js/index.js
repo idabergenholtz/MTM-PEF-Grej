@@ -267,9 +267,14 @@ function goBackToConversion() {
     if (!goBack){
         return;
     }
+    let toc = document.getElementById("toc")
+    let vol = document.getElementById("volumejumper")
+    while(toc.options.length) toc.options.remove(0)
+    while(vol.options.length) vol.options.remove(0)
     document.title = "Läs punktskrift direkt";
     htmlConvertingText.style = "display:none";
-    htmlChosenFile.innerHTML = "- ingen fil vald";
+    htmlChosenFile.innerHTML = "ingen fil vald";
+
     toggleDiv(true);
 
     // Must clear this if we go back and want to select the same file again.
