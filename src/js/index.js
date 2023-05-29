@@ -171,9 +171,10 @@ alert("Sätta platsmärke \n\n"+
 document.getElementById("backFromFlow").addEventListener("click",goBackToConversion);
 
 document.getElementById("volClick").addEventListener("click", (e) => {
+    
     let s =  document.getElementById("volumejumper")
     let option = s.value
-    if (option != "title" && window.confirm("Vill du gå till volym " + s.options[s.selectedIndex].text + "?")){
+    if (option != "title" /*&& window.confirm("Vill du gå till volym " + s.options[s.selectedIndex].text + "?")*/){
         document.getElementById(option).focus()
     }
 });
@@ -206,11 +207,13 @@ document.getElementById("tocClick").addEventListener("click", (e) => {
                 "Tyvärr kan det bli fel ibland som när en rad slutar med ett årtal. Vi ber om ursäkt för förvirringen.");
         }
         else {
+            /*
             let forts = window.confirm("Vill du gå vidare till " + s.options[s.selectedIndex].text + "?");
-            if (forts){
-                div.focus()
-            }        
+            if (forts){*/    
         }
+                div.focus()
+            //}    
+            
     }
 });
 //PAGE BY PAGE 
