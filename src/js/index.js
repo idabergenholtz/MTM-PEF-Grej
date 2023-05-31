@@ -51,8 +51,10 @@ function toggleDiv(toConvertDiv, pageByPage = true){
     // let readDiv = document.getElementById("readerDiv");
     // readDiv.style.display = toConvertDiv ? "none" : "block";
     // convDiv.style.display = toConvertDiv ? "block" : "none";
+    let h1 = document.getElementById("titleH1")
     
     document.getElementById("convertDiv").style.display = toConvertDiv ? "block" : "none";
+    h1.style.display = toConvertDiv ? "block" : "none";
     if (toConvertDiv){
 
         document.getElementById("readerDiv").style.display = "none";

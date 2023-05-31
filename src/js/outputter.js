@@ -36,10 +36,10 @@ class OutputFormatter {
 
 class OutputFormatterHtml extends OutputFormatter {
     // First page
-    static formatFirstPageTitleStart()     { return '<h1 tabindex=0 id="newPage" class="first-page-title">'; }
+    static formatFirstPageTitleStart()     { return '<h1 tabindex=-1 id="newPage" class="first-page-title">'; }
     static formatFirstPageAuthorStart()    { return '<h2 class="first-page-author">'; }
     static formatFirstPageDateStart()      { return '<h3 class="first-page-date">'; }
-    static firstPageMetaDataTableStart()   { return '<table lang="en-GB">'; }
+    static firstPageMetaDataTableStart()   { return '<table>'; } //lang="en-GB"
     static formatFirstPageMetaKeyStart()   { return '<tr><td>'; }
     static formatFirstPageMetaValueStart() { return '<td>'; }
 
@@ -55,13 +55,13 @@ class OutputFormatterHtml extends OutputFormatter {
     static formatVolumeStart(id)           { return '<div class="volume" id ="vol'+id+'" tabindex = -1'; }
     static formatSectionStart()            { return '<div class="section">'; }
     static formatPageStart()               { return '<div id = "bookPage" class="page">'; }
-    static formatRowStart()                { return '<p>'; }
+    static formatRowStart()                { return ''; }
 
     static formatBodyEnd()                 { return '</div>'; }
     static formatVolumeEnd()               { return '</div>'; }
     static formatSectionEnd()              { return '</div>'; }
     static formatPageEnd()                 { return '</div>'; }
-    static formatRowEnd()                  { return '</p>'; }
+    static formatRowEnd()                  { return '<br>'; }
 }
 
 
@@ -136,6 +136,7 @@ class Outputter {
     static foundContents = 0;
     static stopLooking = false
     static contentPages = []
+    static standardParagraph = false
     /**
      * 
      * @param {*} page 
@@ -161,16 +162,6 @@ class Outputter {
                 pageNbr = !isNaN(pageNbr) ? pageNbr : -1;
             }
 
-            // if (row.toUpperCase().includes("INNEHÅLL")){
-            //     // console.log(row)
-            //     this.foundContents += 1;
-            // }
-
-
-            // if (this.foundContents == 1 && row.toUpperCase().includes("VOLYM")){
-            //     volymCounter++;
-            // }
-
             // page number row will not be added to normal page text
             // special page numbers like roman numerals will be added however
             // as well as first rows not containing page numbers
@@ -178,10 +169,13 @@ class Outputter {
             if (isBlankRow){
                 newPage += '<br>';
             }
-            else if (pageNbr < 0){
-                newPage += outputFormatter.formatRowStart();
-                newPage += row;
-                newPage += outputFormatter.formatRowEnd();
+            else if (pageNbr < 0 || this.standardParagraph){
+                if (row_i != 0){
+                    newPage += outputFormatter.formatRowStart();
+                    newPage += row;
+                    newPage += outputFormatter.formatRowEnd();
+                }
+                
                 tableOfContentString += row.trim() + "\n";
             }
             else if (row_i !== 0) {
@@ -229,7 +223,7 @@ class Outputter {
         Returns:
             <String>: Formatted first page
     */
-    static formatFirstPage(metaData, outputFormat) {
+    static formatFirstPage(metaData, outputFormat, addTitle = true) {
         let outputFormatter = Outputter.getOutputFormatter(outputFormat);
 
         let output = '';
@@ -238,9 +232,9 @@ class Outputter {
         for (const [key, value] of Object.entries(metaData)) {
             switch (key) {
                 case 'title':
-                    output += outputFormatter.formatFirstPageTitleStart() +
+                    output += addTitle ? outputFormatter.formatFirstPageTitleStart() +
                               value +
-                              outputFormatter.formatFirstPageTitleEnd();
+                              outputFormatter.formatFirstPageTitleEnd() : '<h1 class = "normalH1">'+value+'</h1>';
                 break;
                 case 'creator':
                     output += outputFormatter.formatFirstPageAuthorStart() +
@@ -271,12 +265,47 @@ class Outputter {
                 addedMetadataTable = true;
             }
 
-            output += outputFormatter.formatFirstPageMetaKeyStart() +
-                      key +
+            let nyckel = key;
+            let skippa = false;
+
+            switch (key){
+                case 'identifier':
+                    nyckel = 'identifierare';
+                    break;
+                case 'description':
+                    nyckel = 'beskrivning';
+                    break;
+                case 'publisher':
+                    nyckel = 'utgivare';
+                    break;
+                case 'type':
+                    nyckel = 'ämneskod (SAB)'
+                    if (value.includes('H') && value.includes('.03')){
+                        this.standardParagraph = true; //hack för att få punktskriftsrader vid poesi
+                    }
+                    break;
+                case 'source':
+                    skippa = true;
+                    break;
+                case 'format':
+                    skippa = true;
+                    break;
+                case 'language':
+                    nyckel = 'språk';
+                    break;
+
+                case 'contributor':
+                    nyckel = 'medverkande';
+                    break;
+                
+            }
+
+            output += !skippa ? outputFormatter.formatFirstPageMetaKeyStart() +
+                      nyckel +
                       outputFormatter.formatFirstPageMetaKeyEnd() +
                       outputFormatter.formatFirstPageMetaValueStart() +
                       value +
-                      outputFormatter.formatFirstPageMetaValueEnd();
+                      outputFormatter.formatFirstPageMetaValueEnd() : "";
         }
 
         if (addedMetadataTable) {

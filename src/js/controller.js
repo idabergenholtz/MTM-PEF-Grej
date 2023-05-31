@@ -62,15 +62,15 @@ class Controller {
         console.log(`Using output format: ${outputFileFormat}`);
 
         console.log(`Creating first page from meta date in header: ${metaData}`);
-        let firstPage = Outputter.formatFirstPage(metaData, outputFileFormat);
+        let firstPage = Outputter.formatFirstPage(metaData, outputFileFormat, byPage);
 
         console.log(firstPage);
 
         if (!byPage) {
             console.log('Giving pef tree with clear text to outputter');
 
-            document.getElementById("metaDataPage").innerHTML = firstPage;
-            let output = Outputter.format(pefTree, outputFileFormat);
+            //document.getElementById("metaDataPage").innerHTML = firstPage;
+            let output = firstPage + Outputter.format(pefTree, outputFileFormat);
 
             console.log('Outputter complete');
             return output;

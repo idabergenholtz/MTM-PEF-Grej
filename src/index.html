@@ -52,13 +52,14 @@
 
         <div id = "text" class="bookText" role="page text content"></div>
         <br>
-        <div class="buttonPanel" role="navigation">
+        <div class="buttonPanel"> 
+            <!--role="navigation"   borttagen för att onödigt enligt Henrik-->
             <button id = "nextPage">Nästa sida</button>
             <br>
             <button id = "previousPage">Föregående sida</button>
             <br>
             <label for = "goToPage">Hoppa till sida: </label>
-            <input id = "goToPage" type="text"  placeHolder="Gå till sida: ">
+            <input id = "goToPage" type="text"  placeHolder="Gå till sida: "> <!--gör om till text area-->
             <br>
             <button id = "backToConversion" >
                 Till startsida
@@ -68,32 +69,33 @@
     </div>
     
     <div id = "flowDiv" style="display:none">
-        <div id ="metaDataPage" ></div>
-        <div id = "flowMenu"  role="navigation" style = "background-color: var(--main-colour); ">
-                <!--<button id = "instruction" class = "inverseColorBtn">Info skärmläsare</button>-->
-              
-                    <label for = "toc" class = "buttonPanel" style = "color: white">Innehållsförteckning: </label>
-                    
-                   
-                    <select id = "toc" class = "inverseColorBtn" aria-describedby="tocInfoSR">
-                    </select> 
-                    <button id ="tocClick" class = "inverseColorBtn">Hoppa till valt kapitel</button>
-             
-                    <label for = "volumejumper" class = "buttonPanel" style = "color: white">Volymer: </label>
-                    
-                    
-                    <select id = "volumejumper" class = "inverseColorBtn" aria-describedby="volInfoSR">
-                    </select>  
-                    <button id ="volClick" class = "inverseColorBtn">Hoppa till vald volym</button>
-             
-              
-                <button id = "volumeInfo" class = "inverseColorBtn">Mer information</button>
-                <button id = "backFromFlow" class = "inverseColorBtn">Till startsida</button>
+        <div id = "flowMenu"  role="navigation" style = "background-color: #BD5EB2; border:1px solid white;">
+            <!--<button id = "instruction" class = "inverseColorBtn">Info skärmläsare</button>-->
+          
+                <label for = "toc" class = "buttonPanel" style = "color: white">Innehållsförteckning: </label>
                 
-        </div>
+               
+                <select id = "toc" class = "inverseColorBtn" aria-describedby="tocInfoSR">
+                </select> 
+                <button id ="tocClick" class = "inverseColorBtn">Hoppa till valt kapitel</button>
+         
+                <label for = "volumejumper" class = "buttonPanel" style = "color: white">Volymer: </label>
+                
+                
+                <select id = "volumejumper" class = "inverseColorBtn" aria-describedby="volInfoSR">
+                </select>  
+                <button id ="volClick" class = "inverseColorBtn">Hoppa till vald volym</button>
+         
+          
+            <button id = "volumeInfo" class = "inverseColorBtn">Mer information</button>
+            <button id = "backFromFlow" class = "inverseColorBtn">Till startsida</button>
+            
+    </div>
+        <!--<div id ="metaDataPage" ></div>-->
+        
         <p id = "tocInfoSR" class="sr-only">Välj kapitel från listan och tryck sedan på knappen "Hoppa till valt kapitel"</p>
         <p id = "volInfoSR" class="sr-only">Välj kapitel från listan och tryck sedan på knappen "Hoppa till vald volym"</p>
-        <div id = "flowText" class="text-container" role="book text content" ></div>
+        <div id = "flowText" class="scroll"></div>
 
     </div>
     

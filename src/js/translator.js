@@ -116,7 +116,11 @@ function uppercase(braille, index) {
         let temp = findInTable(daChar, alphabetTable[1])
 
         // if(temp == uppercaseEndSign) break
-        string += alphabetTable[2][temp]
+        let tecken = alphabetTable[2][temp]
+        if (tecken == undefined){
+            tecken = daChar == '⠤' ? '-' : daChar;
+        }
+        string += tecken
     }
     return string + "  "
 
