@@ -172,8 +172,8 @@ class Outputter {
             else if (pageNbr < 0 || this.standardParagraph){
                 if (row_i != 0){
                     newPage += outputFormatter.formatRowStart();
-                    newPage += row;
-                    newPage += outputFormatter.formatRowEnd();
+                newPage += row;
+                newPage += outputFormatter.formatRowEnd();
                 }
                 
                 tableOfContentString += row.trim() + "\n";
@@ -224,6 +224,7 @@ class Outputter {
             <String>: Formatted first page
     */
     static formatFirstPage(metaData, outputFormat, addTitle = true) {
+        this.standardParagraph = false;
         let outputFormatter = Outputter.getOutputFormatter(outputFormat);
 
         let output = '';
@@ -335,6 +336,19 @@ function tableOfContent(str) {
         prevInd = match.index + match[0].length
         //console.log(text)
         //console.log(parseInt(match[0]))
+
+        if (text.toUpperCase().includes("VOLYM")){
+            let foundIndex = text.toUpperCase().indexOf("VOLYM");
+            let afterVol = text.substring(foundIndex)
+            text = afterVol
+       }
+
+        if (text.toUpperCase().includes("SKRIFTSBOKEN STÅR INOM")){
+            let foundIndex = text.toUpperCase().indexOf("SKRIFTSBOKEN STÅR INOM");
+            let afterVol = text.substring(foundIndex+33)
+            text = afterVol
+        }
+
         let dotIncluded= false;
         while (text.includes('.')){
             dotIncluded = true;

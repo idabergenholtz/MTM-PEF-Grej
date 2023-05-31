@@ -76,6 +76,7 @@ function isPefFileType(fileType) {
 
 function selectFile() {
     // TODO: Fix this synch
+    console.log("YO!")
     if (readingFile) {
         alert('Läser redan en fil...');
         return;
