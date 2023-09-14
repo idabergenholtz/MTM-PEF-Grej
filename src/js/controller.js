@@ -33,6 +33,7 @@ class Controller {
             filename  <String>
             sizeKb    <Integer>
             inputText <String>
+            byPage    <boolean>
             download  <boolean>
     */
     run(fileName, sizeKb, inputText, byPage = true, download=false) {

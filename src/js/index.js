@@ -1,6 +1,12 @@
 import { Controller } from './controller.js';
 import { PageReader } from './page_reader.js';
 
+//
+//
+// This file handles all the I/O, such as loading files, pressing buttons
+//
+
+
 
 const pageReader = new PageReader();
 const controller = new Controller(pageReader);
@@ -156,6 +162,7 @@ function convert(){
 
 
 //FLOW TEXT NAVIGATION
+
 /*
 window.addEventListener("beforeunload", (event) => {
     window.localStorage.setItem(fileName + "_flow", document.documentElement.scrollTop);
@@ -219,6 +226,7 @@ document.getElementById("tocClick").addEventListener("click", (e) => {
             
     }
 });
+
 //PAGE BY PAGE 
 
 function displayCurrentPage(focusNewPage = true, focusH1 = false){
@@ -230,10 +238,7 @@ function displayCurrentPage(focusNewPage = true, focusH1 = false){
     const firstLine = document.getElementById('bookPage');
     
     if (focusNewPage){
-        //We need to use document.getElementById directly here
-        //since the h1 tag changes every time
-        //So a global const won't work
-        // const daPage = document.getElementById('currentPage')
+        //We want to either focus on the h1 "Sidan x" or first line of book page
         if (focusH1){
             h1.focus()
             return;

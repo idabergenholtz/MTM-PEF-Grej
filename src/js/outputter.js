@@ -154,7 +154,6 @@ class Outputter {
 
         let tableOfContentString = "";
 
-
         for (let [row_i, row] of pageRows) {
             if (row_i == 0){
                 let str = row.replace(/\s+/g, '');
@@ -194,6 +193,8 @@ class Outputter {
                     newPage += '<br>&ensp;' + row;
                 }
                 else{
+                    // row = row.charAt(0) == " " ? row.substring(2) : row;
+
                     newPage += row;
                 }
                 //newPage += outputFormatter.formatRowEnd();
